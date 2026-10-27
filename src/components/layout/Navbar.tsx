@@ -49,7 +49,7 @@ export default function Navbar() {
               </div>
               <div className="flex flex-col">
                 <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-900 bg-clip-text text-transparent">
-                  ClubPulse
+                  Club.ing
                 </span>
                 <span className="text-[10px] tracking-wider text-slate-400 font-semibold uppercase -mt-1">
                   Campus Org OS

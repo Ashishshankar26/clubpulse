@@ -836,7 +836,7 @@ export const INITIAL_FEEDBACK: ClubFeedback[] = [
     submittedDate: '2026-10-22',
     sentiment: 'positive',
     responded: true,
-    responseNote: 'Thank you Aarav! We are rolling out ClubPulse task boards specifically to distribute the logistics load.'
+    responseNote: 'Thank you Aarav! We are rolling out Club.ing task boards specifically to distribute the logistics load.'
   },
   {
     id: 'fb_2',

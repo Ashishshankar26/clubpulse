@@ -211,7 +211,7 @@ export default function ContributionsLedgerPage() {
                   <Award className="w-8 h-8" />
                 </div>
                 <h3 className="text-xs font-black uppercase tracking-widest text-indigo-700">
-                  ClubPulse Campus Proof-of-Work Certificate
+                  Club.ing Campus Proof-of-Work Certificate
                 </h3>
                 <h2 className="text-xl font-extrabold text-slate-900">
                   Verified Contribution Credit

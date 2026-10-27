@@ -1,12 +1,12 @@
-# 🚀 ClubPulse — College Club Contribution & Management Platform
+# 🚀 Club.ing — College Club Contribution & Management Platform
 
-**ClubPulse** is an operating system for campus student organizations designed specifically to solve the **“Ghost Members and Burnout Leads”** problem in universities.
+**Club.ing** is an operating system for campus student organizations designed specifically to solve the **“Ghost Members and Burnout Leads”** problem in universities.
 
 ---
 
 ## 🎯 The Core Problem & Solution
 
-| Problem | Symptoms | ClubPulse Solution |
+| Problem | Symptoms | Club.ing Solution |
 | :--- | :--- | :--- |
 | **Ghost Members** | 80% of recruited members disappear after week 1, holding titles without delivering work. | Transparent task allocation, participation telemetry, and verified contribution ledger. |
 | **Burnout Leads** | 1 or 2 passionate leads shoulder 80%+ of logistics, tech, and sponsorships alone. | Algorithmic **Burnout Early Warning Radar** and automated workload rebalancing recommendations. |

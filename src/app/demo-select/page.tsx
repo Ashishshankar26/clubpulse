@@ -100,7 +100,7 @@ export default function DemoSelectPage() {
             Select Your Demonstration Role
           </h1>
           <p className="text-slate-600 text-sm max-w-2xl mx-auto leading-relaxed">
-            ClubPulse provides purpose-built workflows for members, leads, and administrators.
+            Club.ing provides purpose-built workflows for members, leads, and administrators.
             Select a persona below to experience live interactive state, role-tailored dashboards, and the end-to-end lifecycle.
           </p>
         </div>

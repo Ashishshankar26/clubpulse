@@ -84,7 +84,7 @@ export default function ClubReportsPage() {
                 Student Organizations Performance & Health Audit
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Evaluation Period: <strong>{reportTerm}</strong> • Published via ClubPulse OS
+                Evaluation Period: <strong>{reportTerm}</strong> • Published via Club.ing OS
               </p>
             </div>
 
@@ -193,7 +193,7 @@ export default function ClubReportsPage() {
             </div>
             <div className="text-right">
               <p className="font-bold text-slate-900 text-sm">Official Council Verification</p>
-              <p className="text-slate-500">All metrics calculated via ClubPulse telemetry</p>
+              <p className="text-slate-500">All metrics calculated via Club.ing telemetry</p>
               <p className="text-[10px] text-slate-400 mt-2">Certified for Academic Year 2026</p>
             </div>
           </div>

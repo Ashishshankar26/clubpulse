@@ -3,7 +3,7 @@ import './globals.css';
 import { ClubPulseProvider } from '@/context/ClubPulseContext';
 
 export const metadata: Metadata = {
-  title: 'ClubPulse | College Club Contribution & Management Platform',
+  title: 'Club.ing | College Club Contribution & Management Platform',
   description: 'Solving the Ghost Members and Burnout Leads problem with transparent workload analytics, task velocity, verifiable contributions, and pulse feedback.',
 };
 

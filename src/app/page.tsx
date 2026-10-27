@@ -56,7 +56,7 @@ export default function HomePage() {
             {/* Subheading */}
             <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
               Every semester, 80% of members vanish after recruitment, leaving 1 or 2 exhausted leads to do everything.
-              <strong> ClubPulse</strong> balances task velocity, visualizes workload burnout risk, and provides verified contribution portfolios.
+              <strong> Club.ing</strong> balances task velocity, visualizes workload burnout risk, and provides verified contribution portfolios.
             </p>
 
             {/* CTAs */}
@@ -305,7 +305,7 @@ export default function HomePage() {
             <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
               <Activity className="w-3.5 h-3.5" />
             </div>
-            <span className="font-bold text-slate-200">ClubPulse</span>
+            <span className="font-bold text-slate-200">Club.ing</span>
             <span>• College Club Contribution & Management Platform</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
