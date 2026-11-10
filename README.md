@@ -86,33 +86,33 @@ Use the **Persona Switcher** in the top navigation or visit [`/demo-select`](htt
 
 ---
 
-## 🔌 Tomorrow's Backend Integration Blueprint
+## 🔌 Full-Stack Backend Architecture (Implemented & Live)
 
-All UI components consume data exclusively through the typed service layer in [`src/lib/api.ts`](file:///e:/next.js%20project%20sem%205/src/lib/api.ts) and [`src/context/ClubPulseContext.tsx`](file:///e:/next.js%20project%20sem%205/src/context/ClubPulseContext.tsx).
-
-Tomorrow, connect database credentials and swap the service methods for real API calls:
+All API endpoints are fully implemented and connected to a live **MongoDB Atlas** database cluster with cryptographic JWT session management and Role-Based Access Control (RBAC):
 
 ```typescript
-// Authentication
-POST /api/auth/login
-POST /api/auth/session
+// Authentication & Session
+POST /api/auth/login              // Secure login with bcrypt & HMAC-SHA256 JWT
+POST /api/auth/register           // New student registration
+GET  /api/auth/me                 // Verified session user inspection
+POST /api/auth/logout             // Clears secure session cookie
 
 // Clubs & Recruitment
-GET  /api/clubs
-GET  /api/clubs/:id
-POST /api/clubs/:id/apply
-POST /api/applications/:id/approve
-POST /api/applications/:id/reject
+GET  /api/clubs                   // List clubs with real-time stats
+GET  /api/clubs/[id]              // Detailed club profile & roster
+POST /api/applications            // Submit membership application
+POST /api/applications/[id]/review // Lead approval/rejection pipeline
 
-// Tasks & Workload
-GET   /api/tasks
-POST  /api/tasks
-PATCH /api/tasks/:id/status
-POST  /api/tasks/:id/submit
-POST  /api/tasks/:id/approve
+// Tasks, Workload & Burnout Radar
+GET  /api/tasks                   // Fetch tasks filtered by club/member
+POST /api/tasks                   // Create and assign task deliverable
+POST /api/tasks/[id]/submit       // Member deliverable submission
+POST /api/tasks/[id]/verify       // Lead XP verification & cryptographic proof
+GET  /api/workload                // Burnout index & workload rebalancing
 
-// Contributions & Feedback
-GET  /api/contributions
-POST /api/feedback
-GET  /api/analytics/summary
+// Contributions, Feedback & Governance
+GET  /api/contributions           // Verified Proof-of-Work ledger
+POST /api/feedback                // Pulse 360 anonymous sentiment survey
+GET  /api/analytics               // Activity velocity & participation telemetry
+GET  /api/health                  // System health check & MongoDB cluster ping
 ```
