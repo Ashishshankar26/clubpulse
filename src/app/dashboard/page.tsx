@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AppShell from '@/components/layout/AppShell';
 import { useClubPulse } from '@/context/ClubPulseContext';
 import { calculateClubKPIs } from '@/lib/metrics';
+import { isUserLeadOfClub, isApplicationOwnedByUser, isTaskAssignedToUser, getAvatarUrl } from '@/lib/permissions';
 import {
   Flame,
   Users,
@@ -21,8 +22,11 @@ import {
   ExternalLink,
   ShieldAlert,
   Send,
-  Zap,
+  Building,
+  CheckSquare,
+  Camera,
 } from 'lucide-react';
+import ProfilePictureModal from '@/components/profile/ProfilePictureModal';
 
 export default function DashboardPage() {
   const {
@@ -30,83 +34,110 @@ export default function DashboardPage() {
     clubs,
     tasks,
     applications,
-    contributions,
     feedbacks,
     reviewApplication,
     reviewTask,
     updateTaskStatus,
+    sendNudge,
   } = useClubPulse();
 
   const [nudgeSent, setNudgeSent] = useState<string | null>(null);
+  const [nudgedMemberIds, setNudgedMemberIds] = useState<Set<string>>(new Set());
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   // Derive club led by current user if lead
-  const myLeadClub = clubs.find(c => c.leadId === currentUser.id) || clubs[0];
+  const myLeadClub = clubs.find(c => isUserLeadOfClub(currentUser, c)) || clubs[0];
   const gdscKpis = calculateClubKPIs(myLeadClub, tasks, feedbacks);
 
   // User's joined clubs
-  const myClubs = clubs.filter(c => currentUser.clubsJoined.includes(c.id));
+  const myClubs = clubs.filter(c => currentUser.clubsJoined.includes(c.id) || isUserLeadOfClub(currentUser, c));
 
   // User's assigned tasks
-  const myTasks = tasks.filter(t => t.assigneeId === currentUser.id);
+  const myTasks = tasks.filter(t => isTaskAssignedToUser(t, currentUser));
   const myPendingTasks = myTasks.filter(t => t.status !== 'completed');
 
-  // Lead review queues
+  // User's submitted applications
+  const myApplications = applications.filter(a => isApplicationOwnedByUser(a, currentUser));
+
+  // Lead review queues (strictly exclude self-approval/self-verification)
   const pendingApplicants = applications.filter(
-    a => a.clubId === myLeadClub.id && (a.status === 'pending' || a.status === 'under_review')
+    a => a.clubId === myLeadClub?.id && (a.status === 'pending' || a.status === 'under_review') && !isApplicationOwnedByUser(a, currentUser)
   );
   const tasksAwaitingReview = tasks.filter(
-    t => t.clubId === myLeadClub.id && t.status === 'under_review'
+    t => t.clubId === myLeadClub?.id && t.status === 'under_review' && !isTaskAssignedToUser(t, currentUser)
   );
 
   // Ghost members for lead club
-  const ghostMembers = myLeadClub.members.filter(
+  const ghostMembers = myLeadClub ? myLeadClub.members.filter(
     m => m.isGhostRisk || m.participationRate < 25
-  );
+  ) : [];
 
-  const handleNudge = (memberName: string) => {
-    setNudgeSent(memberName);
-    setTimeout(() => setNudgeSent(null), 3000);
+  const handleNudge = (memberId: string, memberName: string) => {
+    const res = sendNudge(memberId, memberName, myLeadClub.name);
+    if (res.success) {
+      setNudgedMemberIds(prev => new Set(prev).add(memberId));
+      setNudgeSent(res.message);
+      setTimeout(() => setNudgeSent(null), 4000);
+    }
   };
 
   return (
     <AppShell>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
           <div className="flex items-center gap-4">
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
-              className="w-16 h-16 rounded-2xl object-cover ring-4 ring-indigo-50 shadow-md"
-            />
+            <div
+              className="relative group cursor-pointer shrink-0"
+              onClick={() => setIsAvatarModalOpen(true)}
+              title="Click to change profile picture"
+            >
+              <img
+                src={getAvatarUrl(currentUser.avatar, currentUser.name)}
+                alt={currentUser.name}
+                className="w-14 h-14 rounded-xl object-cover ring-1 ring-slate-200 group-hover:opacity-85 transition"
+              />
+              <button
+                type="button"
+                onClick={e => {
+                  e.stopPropagation();
+                  setIsAvatarModalOpen(true);
+                }}
+                className="absolute -bottom-1 -right-1 p-1 rounded-md bg-slate-900 hover:bg-slate-800 text-white ring-2 ring-white shadow-xs transition"
+                title="Change photo"
+              >
+                <Camera className="w-3 h-3" />
+              </button>
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-slate-900">
-                  Welcome back, {currentUser.name.split(' ')[0]}!
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                  Welcome back, {currentUser.name.split(' ')[0]}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+                <span className="px-2 py-0.5 rounded-md text-[11px] font-medium uppercase tracking-wide bg-slate-100 text-slate-700 border border-slate-200/80">
                   {currentUser.role === 'club_lead'
                     ? 'Club Lead'
                     : currentUser.role === 'admin'
-                    ? 'Campus Dean'
+                    ? 'Council Dean'
                     : 'Student Member'}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                {currentUser.department} • {currentUser.year}
+                <span className="font-mono text-slate-600 font-medium">
+                  {currentUser.registrationNumber || '2023BCSE014'}
+                </span>{' '}
+                • {currentUser.department} • {currentUser.year}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             {currentUser.role === 'student' && (
-              <div className="flex items-center gap-3 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2.5 rounded-2xl border border-indigo-100">
-                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase font-bold text-slate-400">Verified Activity XP</p>
-                  <p className="text-lg font-black text-indigo-700">{currentUser.xpPoints} XP</p>
+              <div className="flex items-center gap-2.5 bg-slate-50 px-3.5 py-2 rounded-lg border border-slate-200/80">
+                <Award className="w-4 h-4 text-slate-600" />
+                <div className="text-left">
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Activity Credits</p>
+                  <p className="text-sm font-bold text-slate-900">{currentUser.xpPoints} XP</p>
                 </div>
               </div>
             )}
@@ -114,9 +145,9 @@ export default function DashboardPage() {
             {currentUser.role === 'club_lead' && (
               <Link
                 href="/tasks"
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs flex items-center gap-1.5"
               >
-                <span>Manage GDSC Tasks</span>
+                <span>Manage Tasks</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             )}
@@ -124,9 +155,9 @@ export default function DashboardPage() {
             {currentUser.role === 'admin' && (
               <Link
                 href="/reports"
-                className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs flex items-center gap-1.5"
               >
-                <span>Council Governance Report</span>
+                <span>Governance Report</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             )}
@@ -138,151 +169,153 @@ export default function DashboardPage() {
         ========================================================================= */}
         {currentUser.role === 'club_lead' && (
           <div className="space-y-6">
-            {/* Burnout Risk Early Warning Card */}
-            <div className="rounded-3xl p-6 bg-gradient-to-br from-amber-500 via-amber-600 to-rose-600 text-white shadow-xl shadow-amber-500/10">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/20">
+            {/* Burnout Risk Assessment Card - Clean Executive Panel */}
+            <div className="rounded-xl p-5 sm:p-6 bg-white border border-slate-200/90 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                    <Flame className="w-7 h-7 text-white animate-bounce" />
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center shrink-0">
+                    <Flame className="w-5 h-5 text-slate-700" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-black/20 px-2 py-0.5 rounded-full">
-                      Burnout Early Warning Triggered
-                    </span>
-                    <h2 className="text-xl font-black mt-1">
-                      Lead Task Concentration Alert: {gdscKpis.burnoutIndex}/100 Risk Score
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                        Early Warning Alert
+                      </span>
+                      <span className="text-xs font-semibold text-slate-700">
+                        {gdscKpis.burnoutIndex}/100 Risk Score
+                      </span>
+                    </div>
+                    <h2 className="text-base font-bold text-slate-900 mt-1">
+                      Lead Task Concentration Alert for {myLeadClub.shortName}
                     </h2>
                   </div>
                 </div>
                 <Link
                   href="/workload"
-                  className="px-4 py-2 rounded-xl bg-white text-amber-900 font-bold text-xs hover:bg-amber-50 transition shadow self-start md:self-auto"
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs self-start md:self-auto"
                 >
                   Workload Rebalancer →
                 </Link>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="bg-black/15 rounded-2xl p-3 border border-white/10">
-                  <p className="text-white/80">Lead Task Allocation</p>
-                  <p className="text-xl font-bold mt-1">65% of open tasks</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">Threshold recommendation is &lt;35%</p>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Lead Task Allocation</p>
+                  <p className="text-lg font-bold text-slate-900 mt-0.5">65% of open tasks</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Campus recommended limit is &lt;35%</p>
                 </div>
-                <div className="bg-black/15 rounded-2xl p-3 border border-white/10">
-                  <p className="text-white/80">Available Core Members</p>
-                  <p className="text-xl font-bold mt-1">3 Available</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">Aarav and Ananya have capacity</p>
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Available Core Members</p>
+                  <p className="text-lg font-bold text-slate-900 mt-0.5">3 Available</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Active team members have open bandwidth</p>
                 </div>
-                <div className="bg-black/15 rounded-2xl p-3 border border-white/10">
-                  <p className="text-white/80">Ghost Members Detected</p>
-                  <p className="text-xl font-bold mt-1">{ghostMembers.length} Members</p>
-                  <p className="text-[11px] text-white/70 mt-0.5">0 tasks completed in past 30 days</p>
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Inactive Members Flagged</p>
+                  <p className="text-lg font-bold text-slate-900 mt-0.5">{ghostMembers.length} Members</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">0 tasks completed in past 30 days</p>
                 </div>
               </div>
             </div>
 
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 mb-2">
-                  <span className="text-xs font-semibold uppercase">Total GDSC Members</span>
-                  <Users className="w-4 h-4 text-indigo-500" />
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+                  <span className="text-[11px] font-medium uppercase tracking-wider">Total Members</span>
+                  <Users className="w-4 h-4 text-slate-400" />
                 </div>
-                <p className="text-2xl font-black text-slate-900">{myLeadClub.memberCount}</p>
-                <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>{gdscKpis.participationRate}% Active Participation</span>
+                <p className="text-2xl font-bold text-slate-900">{myLeadClub.memberCount}</p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  {gdscKpis.participationRate}% active participation
                 </p>
               </div>
 
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 mb-2">
-                  <span className="text-xs font-semibold uppercase">Task Completion</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+                  <span className="text-[11px] font-medium uppercase tracking-wider">Task Completion</span>
+                  <CheckCircle2 className="w-4 h-4 text-slate-400" />
                 </div>
-                <p className="text-2xl font-black text-slate-900">{gdscKpis.taskCompletionRate}%</p>
+                <p className="text-2xl font-bold text-slate-900">{gdscKpis.taskCompletionRate}%</p>
                 <p className="text-[11px] text-slate-500 mt-1">
                   {gdscKpis.completedTasks} completed / {gdscKpis.totalTasks} total
                 </p>
               </div>
 
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 mb-2">
-                  <span className="text-xs font-semibold uppercase">Pending Applicants</span>
-                  <Sparkles className="w-4 h-4 text-amber-500" />
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+                  <span className="text-[11px] font-medium uppercase tracking-wider">Pending Applicants</span>
+                  <Sparkles className="w-4 h-4 text-slate-400" />
                 </div>
-                <p className="text-2xl font-black text-slate-900">{pendingApplicants.length}</p>
+                <p className="text-2xl font-bold text-slate-900">{pendingApplicants.length}</p>
                 <Link
                   href="/recruitment"
-                  className="text-[11px] text-indigo-600 font-semibold mt-1 inline-block hover:underline"
+                  className="text-[11px] text-slate-600 font-medium mt-1 inline-block hover:text-slate-900 hover:underline"
                 >
                   Review pipeline →
                 </Link>
               </div>
 
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between text-slate-500 mb-2">
-                  <span className="text-xs font-semibold uppercase">Satisfaction (CSAT)</span>
-                  <Award className="w-4 h-4 text-purple-500" />
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+                  <span className="text-[11px] font-medium uppercase tracking-wider">Satisfaction</span>
+                  <Award className="w-4 h-4 text-slate-400" />
                 </div>
-                <p className="text-2xl font-black text-slate-900">{gdscKpis.averageSatisfaction} / 5.0</p>
-                <p className="text-[11px] text-slate-500 mt-1">Based on pulse feedback</p>
+                <p className="text-2xl font-bold text-slate-900">{gdscKpis.averageSatisfaction} / 5.0</p>
+                <p className="text-[11px] text-slate-500 mt-1">Based on student feedback</p>
               </div>
             </div>
 
-            {/* Quick Action Grids: Pending Review & Pending Applicants */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Task Submissions Awaiting Lead Approval */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
+            {/* Action Grids */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Task Submissions Awaiting Approval */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">
+                    <h3 className="font-semibold text-slate-900 text-sm">
                       Task Submissions Awaiting Approval
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Verify submissions to release verified XP to members
+                      Verify proof-of-work to grant activity credits
                     </p>
                   </div>
-                  <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
                     {tasksAwaitingReview.length} Pending
                   </span>
                 </div>
 
                 {tasksAwaitingReview.length === 0 ? (
                   <div className="py-8 text-center text-xs text-slate-400">
-                    All task submissions have been reviewed!
+                    All task submissions have been reviewed.
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {tasksAwaitingReview.map(t => (
                       <div
                         key={t.id}
-                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-slate-900">{t.title}</span>
-                            <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                            <span className="font-semibold text-slate-900">{t.title}</span>
+                            <span className="font-mono text-[11px] text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200">
                               +{t.xpReward} XP
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 mt-0.5">
-                            Submitted by <strong>{t.assigneeName}</strong>
+                          <p className="text-slate-500 mt-0.5">
+                            By <strong className="text-slate-700">{t.assigneeName}</strong>
                           </p>
                           {t.submissionNote && (
-                            <p className="text-[11px] text-slate-600 italic mt-1 bg-white p-2 rounded-lg border border-slate-100">
+                            <p className="text-slate-600 mt-1 bg-white p-2 rounded border border-slate-200/60 text-[11px]">
                               "{t.submissionNote}"
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <button
-                            onClick={() => reviewTask(t.id, 'approve', 'Approved from Lead Dashboard')}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm"
-                          >
-                            Approve (+{t.xpReward} XP)
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => reviewTask(t.id, 'approve', 'Approved from Lead Dashboard')}
+                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs shrink-0"
+                        >
+                          Approve
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -290,19 +323,19 @@ export default function DashboardPage() {
               </div>
 
               {/* Applicant Review Quick Queue */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">
+                    <h3 className="font-semibold text-slate-900 text-sm">
                       Recruitment Pipeline Queue
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Screen applicants for {myLeadClub.shortName}
+                      Applications submitted for {myLeadClub.shortName}
                     </p>
                   </div>
                   <Link
                     href="/recruitment"
-                    className="text-xs text-indigo-600 font-semibold hover:underline"
+                    className="text-xs text-slate-600 hover:text-slate-900 font-medium"
                   >
                     View All →
                   </Link>
@@ -310,27 +343,25 @@ export default function DashboardPage() {
 
                 {pendingApplicants.length === 0 ? (
                   <div className="py-8 text-center text-xs text-slate-400">
-                    No pending applications for this club.
+                    No pending applications.
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {pendingApplicants.slice(0, 2).map(app => (
+                    {pendingApplicants.slice(0, 2).map((app, idx) => (
                       <div
-                        key={app.id}
-                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        key={app.id || (app as any)._id || `applicant_${idx}`}
+                        className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
                         <div className="flex items-start gap-3">
                           <img
-                            src={app.userAvatar}
+                            src={getAvatarUrl(app.userAvatar, app.userName)}
                             alt={app.userName}
-                            className="w-10 h-10 rounded-xl object-cover ring-2 ring-indigo-50"
+                            className="w-9 h-9 rounded-lg object-cover ring-1 ring-slate-200"
                           />
                           <div>
-                            <p className="text-xs font-bold text-slate-900">{app.userName}</p>
-                            <p className="text-[11px] text-indigo-600 font-semibold">
-                              Applying for: {app.appliedRole}
-                            </p>
-                            <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                            <p className="font-semibold text-slate-900">{app.userName}</p>
+                            <p className="text-slate-500 font-medium">Role: {app.appliedRole}</p>
+                            <p className="text-slate-500 line-clamp-1 mt-0.5 text-[11px]">
                               {app.statementOfPurpose}
                             </p>
                           </div>
@@ -338,14 +369,14 @@ export default function DashboardPage() {
 
                         <div className="flex items-center gap-2 shrink-0">
                           <button
-                            onClick={() => reviewApplication(app.id, 'approved', 'Welcome to GDSC!')}
-                            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm"
+                            onClick={() => reviewApplication(app.id, 'approved', 'Welcome to the club!')}
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
                           >
                             Approve
                           </button>
                           <Link
                             href="/recruitment"
-                            className="px-2.5 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold"
+                            className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium text-xs"
                           >
                             Details
                           </Link>
@@ -357,53 +388,67 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Ghost Members Inactivity Radar Alert */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            {/* Inactivity Radar Alert */}
+            <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-5 h-5 text-rose-500" />
+                <div className="flex items-center gap-2.5">
+                  <ShieldAlert className="w-4 h-4 text-slate-500" />
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      Ghost Member Detection Alert ({ghostMembers.length} Flagged)
+                    <h3 className="font-semibold text-slate-900 text-sm">
+                      Ghost Member Detection ({ghostMembers.length} Flagged)
                     </h3>
                     <p className="text-xs text-slate-500">
-                      These members joined during recruitment but have 0 verified contributions in 30 days
+                      Members who enrolled but have 0 verified contributions in 30 days
                     </p>
                   </div>
                 </div>
                 {nudgeSent && (
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 animate-in fade-in">
-                    ✓ Re-engagement Nudge sent to {nudgeSent}!
+                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-md animate-in fade-in">
+                    ✓ {nudgeSent}
                   </span>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {ghostMembers.map(m => (
                   <div
                     key={m.userId}
-                    className="p-4 rounded-2xl bg-rose-50/40 border border-rose-200 flex items-center justify-between gap-3"
+                    className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-3">
                       <img
-                        src={m.avatar}
+                        src={getAvatarUrl(m.avatar, m.userName)}
                         alt={m.userName}
-                        className="w-10 h-10 rounded-xl object-cover grayscale"
+                        className="w-8 h-8 rounded-lg object-cover grayscale"
                       />
                       <div>
-                        <p className="text-xs font-bold text-slate-900">{m.userName}</p>
-                        <p className="text-[11px] text-slate-500">{m.userEmail}</p>
-                        <span className="inline-block mt-1 text-[10px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
-                          Participation: {m.participationRate}% • 0 Tasks Done
+                        <p className="font-semibold text-slate-900">{m.userName}</p>
+                        <p className="text-slate-400 text-[11px]">{m.userEmail}</p>
+                        <span className="inline-block mt-0.5 text-[10px] text-slate-500">
+                          {m.participationRate}% participation
                         </span>
                       </div>
                     </div>
                     <button
-                      onClick={() => handleNudge(m.userName)}
-                      className="px-3 py-1.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 text-xs font-bold transition flex items-center gap-1 shrink-0"
+                      onClick={() => handleNudge(m.userId, m.userName)}
+                      disabled={nudgedMemberIds.has(m.userId)}
+                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 shrink-0 ${
+                        nudgedMemberIds.has(m.userId)
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 cursor-default'
+                          : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-xs'
+                      }`}
                     >
-                      <Send className="w-3 h-3" />
-                      <span>Nudge</span>
+                      {nudgedMemberIds.has(m.userId) ? (
+                        <>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Nudged ✓</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3 h-3 text-slate-400" />
+                          <span>Nudge</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 ))}
@@ -413,94 +458,114 @@ export default function DashboardPage() {
         )}
 
         {/* =========================================================================
-            ROLE VIEW 2: STUDENT / MEMBER (Aarav Sharma)
+            ROLE VIEW 2: STUDENT / MEMBER
         ========================================================================= */}
         {currentUser.role === 'student' && (
           <div className="space-y-6">
             {/* Quick summary cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Clubs Enrolled</span>
-                <p className="text-2xl font-black text-indigo-600 mt-1">{myClubs.length}</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">GDSC & RoboCrafters</p>
-              </div>
-
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Active Tasks</span>
-                <p className="text-2xl font-black text-amber-600 mt-1">{myPendingTasks.length}</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">Assigned to you</p>
-              </div>
-
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Verified XP Earned</span>
-                <p className="text-2xl font-black text-emerald-600 mt-1">{currentUser.xpPoints} XP</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">In personal ledger</p>
-              </div>
-
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Active Application</span>
-                <p className="text-base font-bold text-slate-900 mt-1">DesignHub</p>
-                <span className="inline-block mt-0.5 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">
-                  Under Review
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                  Clubs Enrolled
                 </span>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{myClubs.length}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5 truncate">
+                  {myClubs.map(c => c.shortName || c.name).join(', ') || 'No clubs joined'}
+                </p>
+              </div>
+
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                  Active Tasks
+                </span>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{myPendingTasks.length}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Assigned to you</p>
+              </div>
+
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                  Verified XP Earned
+                </span>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{currentUser.xpPoints} XP</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">In personal ledger</p>
+              </div>
+
+              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                  Latest Application
+                </span>
+                {myApplications.length > 0 ? (
+                  <>
+                    <p className="text-base font-semibold text-slate-900 mt-1 truncate">
+                      {myApplications[0].clubName}
+                    </p>
+                    <span className="inline-block mt-1 text-[10px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60 uppercase">
+                      {myApplications[0].status.replace('_', ' ')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-base font-semibold text-slate-900 mt-1 truncate">
+                      None Pending
+                    </p>
+                    <Link
+                      href="/clubs"
+                      className="inline-block mt-1 text-[11px] font-semibold text-blue-600 hover:underline"
+                    >
+                      Browse Clubs →
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
             {/* My Active Tasks Queue */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
-                    My Tasks & Workload Queue
+                  <h3 className="font-semibold text-slate-900 text-sm">
+                    My Assigned Tasks
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Move tasks to Under Review to submit work to your club lead
+                    Track and submit progress for club tasks
                   </p>
                 </div>
                 <Link
                   href="/my-tasks"
-                  className="text-xs font-bold text-indigo-600 hover:underline"
+                  className="text-xs font-medium text-slate-600 hover:text-slate-900"
                 >
-                  Open Full Task View →
+                  Full Task Board →
                 </Link>
               </div>
 
               {myPendingTasks.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
-                  🎉 You have completed all assigned tasks! Great job!
+                  You have completed all assigned tasks.
                 </div>
               ) : (
                 <div className="space-y-3">
                   {myPendingTasks.map(t => (
                     <div
                       key={t.id}
-                      className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                              t.priority === 'urgent'
-                                ? 'bg-rose-100 text-rose-700'
-                                : t.priority === 'high'
-                                ? 'bg-amber-100 text-amber-700'
-                                : 'bg-slate-200 text-slate-700'
-                            }`}
-                          >
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-700">
                             {t.priority}
                           </span>
-                          <span className="text-xs font-bold text-slate-900">{t.title}</span>
-                          <span className="text-xs font-bold text-indigo-600">+{t.xpReward} XP</span>
+                          <span className="font-semibold text-slate-900">{t.title}</span>
+                          <span className="font-mono text-slate-600">+{t.xpReward} XP</span>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">{t.clubName}</p>
-                        <p className="text-xs text-slate-600 mt-1">{t.description}</p>
+                        <p className="text-slate-500 mt-0.5">{t.clubName}</p>
+                        <p className="text-slate-600 mt-1 leading-relaxed">{t.description}</p>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
                         {t.status === 'todo' && (
                           <button
                             onClick={() => updateTaskStatus(t.id, 'in_progress', 'Started working on task')}
-                            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm"
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
                           >
                             Start Task
                           </button>
@@ -509,15 +574,15 @@ export default function DashboardPage() {
                         {t.status === 'in_progress' && (
                           <Link
                             href="/my-tasks"
-                            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition shadow-sm"
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
                           >
                             Submit for Review
                           </Link>
                         )}
 
                         {t.status === 'under_review' && (
-                          <span className="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">
-                            ⏳ Under Lead Review
+                          <span className="text-xs font-medium text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+                            Under Lead Review
                           </span>
                         )}
                       </div>
@@ -528,60 +593,73 @@ export default function DashboardPage() {
             </div>
 
             {/* Application Status & Upcoming Events */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Application Tracking */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="font-bold text-slate-900 text-sm mb-1">
+              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+                <h3 className="font-semibold text-slate-900 text-sm mb-0.5">
                   My Recruitment Applications
                 </h3>
                 <p className="text-xs text-slate-500 mb-4">
-                  Track status of club memberships you applied for
+                  Status of club memberships you applied for
                 </p>
 
-                {applications.filter(a => a.userId === currentUser.id).map(app => (
-                  <div
-                    key={app.id}
-                    className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-slate-900">{app.clubName}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-                        {app.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600">
-                      Applied Role: <strong>{app.appliedRole}</strong>
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      Applied Date: {app.appliedDate}
-                    </p>
-                    {app.notes && (
-                      <p className="text-[11px] text-indigo-700 bg-white p-2 rounded-lg border border-indigo-100">
-                        Lead Note: {app.notes}
-                      </p>
-                    )}
+                {myApplications.length === 0 ? (
+                  <div className="py-8 text-center text-xs text-slate-400 space-y-2">
+                    <p>You haven't submitted any club applications yet.</p>
+                    <Link
+                      href="/clubs"
+                      className="inline-flex items-center gap-1 text-slate-900 font-semibold hover:underline"
+                    >
+                      <span>Explore & Apply to Campus Clubs</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
-                ))}
+                ) : (
+                  myApplications.map((app, idx) => (
+                    <div
+                      key={app.id || (app as any)._id || `my_app_${idx}`}
+                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2 text-xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-slate-900">{app.clubName}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded">
+                          {app.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <p className="text-slate-600">
+                        Applied Role: <strong className="text-slate-800">{app.appliedRole}</strong>
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        Applied Date: {app.appliedDate}
+                      </p>
+                      {app.notes && (
+                        <p className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-[11px]">
+                          Note: {app.notes}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Upcoming Events */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="font-bold text-slate-900 text-sm mb-1">
+              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+                <h3 className="font-semibold text-slate-900 text-sm mb-0.5">
                   Upcoming Events in Your Clubs
                 </h3>
                 <p className="text-xs text-slate-500 mb-4">
-                  Confirmed sessions and workshops
+                  Confirmed campus sessions and workshops
                 </p>
 
                 <div className="space-y-3">
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-bold text-indigo-700">GDSC Workshop</span>
-                      <span className="text-slate-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" /> Nov 04, 2026
+                  <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-slate-900">GDSC Workshop</span>
+                      <span className="text-slate-500 flex items-center gap-1 text-[11px]">
+                        <Calendar className="w-3 h-3 text-slate-400" /> Nov 04, 2026
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-slate-800">
+                    <p className="text-slate-700 font-medium">
                       Android & Jetpack Compose Hands-on
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">
@@ -589,18 +667,18 @@ export default function DashboardPage() {
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-bold text-purple-700">RoboCrafters Sprint</span>
-                      <span className="text-slate-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" /> Nov 14, 2026
+                  <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-slate-900">RoboCrafters Sprint</span>
+                      <span className="text-slate-500 flex items-center gap-1 text-[11px]">
+                        <Calendar className="w-3 h-3 text-slate-400" /> Nov 14, 2026
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-slate-800">
+                    <p className="text-slate-700 font-medium">
                       LiDAR & SLAM Navigation Testing
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      Bay 2 Robotics Lab
+                      Robotics Bay Lab 102
                     </p>
                   </div>
                 </div>
@@ -614,42 +692,42 @@ export default function DashboardPage() {
         ========================================================================= */}
         {currentUser.role === 'admin' && (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl">
-              <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">
+            <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                 Dean of Student Affairs Governance Console
               </span>
-              <h2 className="text-2xl font-black mt-1">
+              <h2 className="text-xl font-bold text-slate-900 mt-1 tracking-tight">
                 Campus Organization Health & Governance Index
               </h2>
-              <p className="text-xs text-purple-200 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
                 Overseeing 5 registered student societies representing 150+ students. Monitoring lead burnout risk, verified activity credits, and council compliance.
               </p>
 
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                  <p className="text-purple-200">Registered Clubs</p>
-                  <p className="text-2xl font-black text-white mt-1">5 Active</p>
+              <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Registered Clubs</p>
+                  <p className="text-xl font-bold text-slate-900 mt-0.5">5 Active</p>
                 </div>
-                <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                  <p className="text-purple-200">Avg Campus Burnout</p>
-                  <p className="text-2xl font-black text-amber-400 mt-1">52 / 100</p>
+                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Avg Campus Burnout</p>
+                  <p className="text-xl font-bold text-slate-900 mt-0.5">52 / 100</p>
                 </div>
-                <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                  <p className="text-purple-200">Verified Activity Credits</p>
-                  <p className="text-2xl font-black text-emerald-400 mt-1">3,450 XP</p>
+                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Verified Credits</p>
+                  <p className="text-xl font-bold text-slate-900 mt-0.5">3,450 XP</p>
                 </div>
-                <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                  <p className="text-purple-200">Council Compliance</p>
-                  <p className="text-2xl font-black text-white mt-1">98.4%</p>
+                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
+                  <p className="text-slate-500 font-medium">Council Compliance</p>
+                  <p className="text-xl font-bold text-slate-900 mt-0.5">98.4%</p>
                 </div>
               </div>
             </div>
 
             {/* University Clubs Governance Table */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
+                  <h3 className="font-semibold text-slate-900 text-sm">
                     Registered Student Organizations Audit
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -658,62 +736,62 @@ export default function DashboardPage() {
                 </div>
                 <Link
                   href="/reports"
-                  className="text-xs font-bold text-purple-600 hover:underline"
+                  className="text-xs font-medium text-slate-600 hover:text-slate-900"
                 >
-                  Print Full Council Report →
+                  Print Report →
                 </Link>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                  <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200/80">
                     <tr>
-                      <th className="py-3 px-4">Club</th>
-                      <th className="py-3 px-4">Category</th>
-                      <th className="py-3 px-4">Lead</th>
-                      <th className="py-3 px-4">Members</th>
-                      <th className="py-3 px-4">Burnout Index</th>
-                      <th className="py-3 px-4">Council Health</th>
-                      <th className="py-3 px-4 text-right">Action</th>
+                      <th className="py-2.5 px-3">Club</th>
+                      <th className="py-2.5 px-3">Category</th>
+                      <th className="py-2.5 px-3">Lead</th>
+                      <th className="py-2.5 px-3">Members</th>
+                      <th className="py-2.5 px-3">Burnout Index</th>
+                      <th className="py-2.5 px-3">Council Health</th>
+                      <th className="py-2.5 px-3 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {clubs.map(club => (
-                      <tr key={club.id} className="hover:bg-slate-50/80 transition">
-                        <td className="py-3 px-4 font-bold text-slate-900">
-                          {club.name}
+                    {clubs.map(c => (
+                      <tr key={c.id} className="hover:bg-slate-50/60 transition">
+                        <td className="py-3 px-3 font-semibold text-slate-900">
+                          {c.name}
                         </td>
-                        <td className="py-3 px-4 text-slate-600">
-                          {club.category}
+                        <td className="py-3 px-3 text-slate-600">
+                          {c.category}
                         </td>
-                        <td className="py-3 px-4 text-slate-600">
-                          {club.leadName}
+                        <td className="py-3 px-3 text-slate-600">
+                          {c.leadName}
                         </td>
-                        <td className="py-3 px-4 font-semibold text-slate-800">
-                          {club.memberCount}
+                        <td className="py-3 px-3 font-mono text-slate-700">
+                          {c.memberCount}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-3">
                           <span
-                            className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                              club.burnoutScore >= 60
-                                ? 'bg-rose-100 text-rose-700 border border-rose-200'
-                                : club.burnoutScore >= 45
-                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                                : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                              c.burnoutScore > 65
+                                ? 'bg-slate-900 text-white shadow-xs'
+                                : 'bg-slate-100 text-slate-700 border border-slate-200'
                             }`}
                           >
-                            {club.burnoutScore}/100 {club.burnoutScore >= 60 ? 'HIGH' : 'NORMAL'}
+                            {c.burnoutScore} / 100
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-bold text-indigo-700">
-                          {club.healthScore}/100
+                        <td className="py-3 px-3">
+                          <span className="font-semibold text-slate-800">
+                            {c.healthScore}%
+                          </span>
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3 px-3 text-right">
                           <Link
-                            href={`/clubs/${club.id}`}
-                            className="text-indigo-600 font-semibold hover:underline"
+                            href={`/clubs/${c.id}`}
+                            className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
                           >
-                            Inspect
+                            Audit Details
                           </Link>
                         </td>
                       </tr>
@@ -724,6 +802,12 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Profile Picture Change Modal */}
+        <ProfilePictureModal
+          isOpen={isAvatarModalOpen}
+          onClose={() => setIsAvatarModalOpen(false)}
+        />
       </div>
     </AppShell>
   );

@@ -1,10 +1,6 @@
 /**
- * ClubPulse Client Service Layer
- * 
- * BACKEND INTEGRATION PREPARATION:
- * Currently delegates to local client-side state / localStorage persistence for demo mode.
- * Tomorrow, replace the internal bodies of these methods with fetch('/api/...') or Supabase/Prisma clients.
- * All method signatures and return shapes remain unchanged.
+ * ClubPulse Production API Service Client
+ * Strongly-typed client wrapper for Next.js App Router API endpoints.
  */
 
 import {
@@ -13,58 +9,151 @@ import {
   Task,
   Contribution,
   ClubFeedback,
-  NotificationItem,
   User,
-  TaskStatus,
-  ApplicationStatus,
 } from '@/types';
 
-export interface ClubPulseService {
-  // Authentication & Session
-  getCurrentUser(): Promise<User>;
-  switchUser(userId: string): Promise<User>;
-  
-  // Clubs
-  getClubs(): Promise<Club[]>;
-  getClubById(id: string): Promise<Club | null>;
-  
-  // Recruitment & Applications
-  getApplications(clubId?: string): Promise<Application[]>;
-  submitApplication(data: Omit<Application, 'id' | 'appliedDate' | 'status'>): Promise<Application>;
-  approveApplication(applicationId: string, reviewerName: string): Promise<{ application: Application; updatedClub: Club }>;
-  rejectApplication(applicationId: string, reviewerName: string, reason?: string): Promise<Application>;
-  
-  // Tasks & Contributions
-  getTasks(clubId?: string): Promise<Task[]>;
-  createTask(data: Omit<Task, 'id' | 'activities'>): Promise<Task>;
-  updateTaskStatus(taskId: string, status: TaskStatus, note?: string): Promise<Task>;
-  submitTaskForReview(taskId: string, submissionNote: string, submissionLink: string): Promise<Task>;
-  approveTaskSubmission(taskId: string, reviewerName: string): Promise<{ task: Task; contribution: Contribution }>;
-  getContributions(userId?: string): Promise<Contribution[]>;
-  
-  // Feedback & Analytics
-  getFeedback(clubId?: string): Promise<ClubFeedback[]>;
-  submitFeedback(data: Omit<ClubFeedback, 'id' | 'submittedDate' | 'responded'>): Promise<ClubFeedback>;
-  respondToFeedback(feedbackId: string, note: string): Promise<ClubFeedback>;
-  
-  // Notifications
-  getNotifications(userId: string): Promise<NotificationItem[]>;
-  markNotificationRead(notificationId: string): Promise<void>;
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(endpoint, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Request failed with status ${res.status}`);
+  }
+  return data;
 }
 
-/* API Endpoints planned for tomorrow:
-   POST /api/auth/login
-   GET  /api/clubs
-   GET  /api/clubs/:id
-   POST /api/clubs/:id/apply
-   POST /api/applications/:id/approve
-   POST /api/applications/:id/reject
-   GET  /api/tasks
-   POST /api/tasks
-   PATCH /api/tasks/:id/status
-   POST /api/tasks/:id/submit
-   POST /api/tasks/:id/approve
-   GET  /api/contributions
-   POST /api/feedback
-   GET  /api/analytics/summary
-*/
+export const api = {
+  auth: {
+    me: () => request<{ success: boolean; authenticated: boolean; user: User }>('/api/auth/me'),
+    login: (registrationNumber: string, password: string) =>
+      request<{ success: boolean; user: User; token: string }>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ registrationNumber, password }),
+      }),
+    logout: () => request<{ success: boolean }>('/api/auth/logout', { method: 'POST' }),
+  },
+
+  clubs: {
+    getAll: (params?: { category?: string; search?: string; recruiting?: boolean }) => {
+      const query = new URLSearchParams();
+      if (params?.category) query.set('category', params.category);
+      if (params?.search) query.set('search', params.search);
+      if (params?.recruiting) query.set('recruiting', 'true');
+      return request<{ success: boolean; clubs: Club[] }>(`/api/clubs?${query.toString()}`);
+    },
+    getById: (id: string) => request<{ success: boolean; club: Club }>(`/api/clubs/${id}`),
+    update: (id: string, updates: Partial<Club>) =>
+      request<{ success: boolean; club: Club }>(`/api/clubs/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      }),
+  },
+
+  applications: {
+    getAll: (clubId?: string) => {
+      const query = clubId ? `?clubId=${encodeURIComponent(clubId)}` : '';
+      return request<{ success: boolean; applications: Application[] }>(`/api/applications${query}`);
+    },
+    submit: (payload: {
+      clubId: string;
+      appliedRole: string;
+      statementOfPurpose: string;
+      skills: string[];
+      portfolioUrl?: string;
+    }) =>
+      request<{ success: boolean; application: Application }>('/api/applications', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    review: (id: string, action: 'approve' | 'reject', notes?: string) =>
+      request<{ success: boolean; application: Application }>(`/api/applications/${id}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ action, notes }),
+      }),
+  },
+
+  tasks: {
+    getAll: (params?: { clubId?: string; assigneeId?: string; status?: string }) => {
+      const query = new URLSearchParams();
+      if (params?.clubId) query.set('clubId', params.clubId);
+      if (params?.assigneeId) query.set('assigneeId', params.assigneeId);
+      if (params?.status) query.set('status', params.status);
+      return request<{ success: boolean; tasks: Task[] }>(`/api/tasks?${query.toString()}`);
+    },
+    create: (payload: {
+      clubId: string;
+      title: string;
+      description?: string;
+      assigneeId: string;
+      priority: string;
+      dueDate: string;
+      estimatedHours: number;
+      tags: string[];
+      xpReward: number;
+    }) =>
+      request<{ success: boolean; task: Task }>('/api/tasks', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    submit: (taskId: string, submissionNote: string, submissionLink?: string) =>
+      request<{ success: boolean; task: Task }>(`/api/tasks/${taskId}/submit`, {
+        method: 'POST',
+        body: JSON.stringify({ submissionNote, submissionLink }),
+      }),
+    verify: (taskId: string, action: 'verify' | 'request_changes', feedback?: string) =>
+      request<{ success: boolean; task: Task; certificateHash?: string }>(`/api/tasks/${taskId}/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ action, feedback }),
+      }),
+  },
+
+  contributions: {
+    getAll: (params?: { clubId?: string; userId?: string; filter?: string }) => {
+      const query = new URLSearchParams();
+      if (params?.clubId) query.set('clubId', params.clubId);
+      if (params?.userId) query.set('userId', params.userId);
+      if (params?.filter) query.set('filter', params.filter);
+      return request<{ success: boolean; contributions: Contribution[] }>(`/api/contributions?${query.toString()}`);
+    },
+  },
+
+  feedback: {
+    submit: (payload: {
+      clubId: string;
+      isAnonymous: boolean;
+      overallSatisfaction: number;
+      workloadFairness: number;
+      leadershipSupport: number;
+      eventFatigueScore: number;
+      feedbackText: string;
+    }) =>
+      request<{ success: boolean; message: string }>('/api/feedback', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    getReport: (clubId: string) =>
+      request<{
+        success: boolean;
+        aggregates: any;
+        feedbacks: ClubFeedback[];
+        smallGroupSuppressionActive: boolean;
+      }>(`/api/feedback?clubId=${encodeURIComponent(clubId)}`),
+  },
+
+  analytics: {
+    getOverview: (clubId?: string) => {
+      const query = clubId ? `?clubId=${encodeURIComponent(clubId)}` : '';
+      return request<{ success: boolean; platformMetrics: any; categoryBreakdown: any[]; topContributors: any[] }>(
+        `/api/analytics${query}`
+      );
+    },
+  },
+};
+
+export default api;

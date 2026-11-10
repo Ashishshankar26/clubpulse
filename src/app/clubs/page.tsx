@@ -53,7 +53,7 @@ export default function ClubsDiscoveryPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Module 1 • Club Discovery
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
@@ -66,7 +66,7 @@ export default function ClubsDiscoveryPage() {
 
           <Link
             href="/my-clubs"
-            className="self-start md:self-auto px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200 transition flex items-center gap-1.5"
+            className="self-start md:self-auto px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium border border-slate-200 transition flex items-center gap-1.5"
           >
             <Layers className="w-4 h-4" />
             <span>My Enrolled Clubs ({currentUser.clubsJoined.length})</span>
@@ -74,7 +74,7 @@ export default function ClubsDiscoveryPage() {
         </div>
 
         {/* Filters & Search Toolbar */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
@@ -84,16 +84,16 @@ export default function ClubsDiscoveryPage() {
                 placeholder="Search clubs by name, technology, or activity..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full pl-10 pr-4 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
               />
             </div>
 
             {/* Recruiting toggle */}
             <button
               onClick={() => setOnlyRecruiting(!onlyRecruiting)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-2 ${
                 onlyRecruiting
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
@@ -104,16 +104,16 @@ export default function ClubsDiscoveryPage() {
 
           {/* Category Pills */}
           <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
               Category:
             </span>
             {CATEGORIES.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   selectedCategory === category
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-slate-900 text-white font-semibold'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
@@ -130,17 +130,17 @@ export default function ClubsDiscoveryPage() {
             return (
               <div
                 key={club.id}
-                className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white rounded-xl overflow-hidden border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
                   {/* Banner Image */}
                   <div className="relative h-36 w-full overflow-hidden bg-slate-100">
                     <img
-                      src={club.banner}
+                      src={club.banner || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&auto=format&fit=crop&q=80'}
                       alt={club.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute inset-0 bg-black/30"></div>
 
                     {/* Category badge */}
                     <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-md text-slate-800 px-2.5 py-1 rounded-full shadow-sm">
@@ -162,7 +162,7 @@ export default function ClubsDiscoveryPage() {
                     {/* Logo & short name */}
                     <div className="absolute -bottom-4 left-5 flex items-end gap-3">
                       <img
-                        src={club.logo}
+                        src={club.logo || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=120&auto=format&fit=crop&q=80'}
                         alt={club.shortName}
                         className="w-14 h-14 rounded-2xl object-cover ring-4 ring-white shadow-md bg-white"
                       />
@@ -172,11 +172,11 @@ export default function ClubsDiscoveryPage() {
                   {/* Club Content */}
                   <div className="pt-6 px-6 pb-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-extrabold text-base text-slate-900 group-hover:text-indigo-600 transition">
+                      <h3 className="font-extrabold text-base text-slate-900 group-hover:text-slate-700 transition">
                         {club.name}
                       </h3>
                       {isMember && (
-                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 shrink-0">
+                        <span className="text-[10px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 shrink-0">
                           Joined
                         </span>
                       )}
@@ -233,7 +233,7 @@ export default function ClubsDiscoveryPage() {
 
                   <Link
                     href={`/clubs/${club.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-slate-900 hover:text-slate-700"
                   >
                     <span>View Profile</span>
                     <ChevronRight className="w-4 h-4" />

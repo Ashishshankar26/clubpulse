@@ -15,13 +15,47 @@ import {
   AlertTriangle,
   Award,
   Users,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function ClubReportsPage() {
-  const { clubs, tasks, feedbacks, contributions } = useClubPulse();
+  const { clubs, tasks, feedbacks, contributions, currentUser } = useClubPulse();
 
   const [selectedClubId, setSelectedClubId] = useState<string>('all');
   const [reportTerm, setReportTerm] = useState('Fall Semester 2026');
+
+  // If student, display access-restricted screen pointing to their verified contributions
+  if (currentUser.role === 'student') {
+    return (
+      <AppShell>
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-xl p-8 border border-slate-200/90 shadow-xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center mx-auto">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-300">
+              Role Access Restricted
+            </span>
+            <h2 className="text-xl font-bold text-slate-900 mt-2">
+              Council Governance & Audit Reports
+            </h2>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Official quarterly governance summaries and administrative council audits are reserved for Club Leadership and Council Officers. To view and export your personal credentials and certificates, visit your Verified Credits page.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/contributions"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+            >
+              <span>View My Verified Credits</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   const targetClubs =
     selectedClubId === 'all'
@@ -37,7 +71,7 @@ export default function ClubReportsPage() {
         {/* Header Controls (Hidden on print) */}
         <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Module 3 • Executive Governance
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
@@ -52,7 +86,7 @@ export default function ClubReportsPage() {
             <select
               value={selectedClubId}
               onChange={e => setSelectedClubId(e.target.value)}
-              className="p-2 rounded-xl border border-slate-200 bg-white font-bold text-xs shadow-sm"
+              className="p-2 rounded-lg border border-slate-200 bg-white font-medium text-xs shadow-2xs"
             >
               <option value="all">All 5 Campus Clubs</option>
               {clubs.map(c => (
@@ -64,7 +98,7 @@ export default function ClubReportsPage() {
 
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition flex items-center gap-1.5"
             >
               <Printer className="w-4 h-4" />
               <span>Print / Save as PDF</span>
@@ -73,44 +107,44 @@ export default function ClubReportsPage() {
         </div>
 
         {/* Printable Report Document Card */}
-        <div className="printable-card bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-lg space-y-8 max-w-4xl mx-auto">
+        <div className="printable-card bg-white rounded-xl p-6 sm:p-10 border border-slate-200/90 shadow-xs space-y-8 max-w-4xl mx-auto">
           {/* Institutional Letterhead */}
           <div className="border-b-2 border-slate-900 pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-indigo-800">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">
                 CAMPUS STUDENT ACTIVITIES & COUNCIL GOVERNANCE
               </p>
-              <h2 className="text-2xl font-black text-slate-900 mt-1">
+              <h2 className="text-2xl font-bold text-slate-900 mt-1">
                 Student Organizations Performance & Health Audit
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Evaluation Period: <strong>{reportTerm}</strong> • Published via Club.ing OS
+                Evaluation Period: <strong>{reportTerm}</strong> • Published via Club.ing Platform
               </p>
             </div>
 
             <div className="text-right text-xs text-slate-500 shrink-0">
               <p>Generated: <strong>October 27, 2026</strong></p>
-              <p className="font-mono text-[10px]">Report ID: CP-REP-2026-Q4</p>
+              <p className="font-mono text-[10px]">Report ID: CLUB-REP-2026-Q4</p>
             </div>
           </div>
 
           {/* Executive Summary Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400">Total Enrolled</span>
-              <p className="text-xl font-black text-slate-900 mt-0.5">150+ Students</p>
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Total Enrolled</span>
+              <p className="text-xl font-bold text-slate-900 mt-0.5">150+ Students</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400">Tasks Verified</span>
-              <p className="text-xl font-black text-emerald-600 mt-0.5">{totalTasksDelivered} Delivered</p>
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Tasks Verified</span>
+              <p className="text-xl font-bold text-emerald-700 mt-0.5">{totalTasksDelivered} Delivered</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400">Verified Credits</span>
-              <p className="text-xl font-black text-indigo-600 mt-0.5">{totalVerifiedXP} XP</p>
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Verified Credits</span>
+              <p className="text-xl font-bold text-slate-900 mt-0.5">{totalVerifiedXP} XP</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400">Compliance Rate</span>
-              <p className="text-xl font-black text-purple-600 mt-0.5">98.2%</p>
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Compliance Rate</span>
+              <p className="text-xl font-bold text-slate-900 mt-0.5">98.2%</p>
             </div>
           </div>
 
@@ -125,7 +159,7 @@ export default function ClubReportsPage() {
               return (
                 <div
                   key={c.id}
-                  className="p-5 rounded-2xl border border-slate-200 space-y-3"
+                  className="p-5 rounded-xl border border-slate-200/80 space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -145,7 +179,7 @@ export default function ClubReportsPage() {
                       >
                         Burnout: {c.burnoutScore}/100 ({kpi.burnoutRiskLevel})
                       </span>
-                      <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+                      <span className="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-md">
                         Health: {c.healthScore}/100
                       </span>
                     </div>
@@ -170,7 +204,7 @@ export default function ClubReportsPage() {
                     </div>
                     <div>
                       <span className="text-[10px] text-slate-400 uppercase font-bold">Satisfaction (CSAT):</span>
-                      <p className="font-bold text-purple-600">{kpi.averageSatisfaction}/5.0</p>
+                      <p className="font-semibold text-slate-900">{kpi.averageSatisfaction}/5.0</p>
                     </div>
                   </div>
 

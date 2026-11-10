@@ -48,7 +48,7 @@ export default function ClubAnalyticsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `clubpulse_export_${selectedClubId}_${Date.now()}.csv`);
+    link.setAttribute('download', `clubing_export_${selectedClubId}_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -69,7 +69,7 @@ export default function ClubAnalyticsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Module 3 • Analytics & Feedback
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
@@ -83,7 +83,7 @@ export default function ClubAnalyticsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportCSV}
-              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium transition flex items-center gap-1.5"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -91,7 +91,7 @@ export default function ClubAnalyticsPage() {
 
             <Link
               href="/reports"
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition flex items-center gap-1.5"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Print Club Report</span>
@@ -100,13 +100,13 @@ export default function ClubAnalyticsPage() {
         </div>
 
         {/* Filters Toolbar */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-slate-400 font-bold uppercase text-[10px]">Filter Club:</span>
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">Filter Club:</span>
             <select
               value={selectedClubId}
               onChange={e => setSelectedClubId(e.target.value)}
-              className="p-2 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="p-2 rounded-lg border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:border-slate-900"
             >
               <option value="all">All Campus Clubs Aggregate</option>
               {clubs.map(c => (
@@ -118,11 +118,11 @@ export default function ClubAnalyticsPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <span className="text-slate-400 font-bold uppercase text-[10px]">Date Range:</span>
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">Date Range:</span>
             <select
               value={selectedTimeframe}
               onChange={e => setSelectedTimeframe(e.target.value)}
-              className="p-2 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="p-2 rounded-lg border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:border-slate-900"
             >
               <option value="month">Current Month (October)</option>
               <option value="semester">Fall Semester 2026</option>
@@ -133,45 +133,45 @@ export default function ClubAnalyticsPage() {
 
         {/* 4 Core KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
-              <span className="text-[11px] font-bold uppercase">Active Participation</span>
-              <Users className="w-4 h-4 text-indigo-500" />
+              <span className="text-[11px] font-semibold uppercase">Active Participation</span>
+              <Users className="w-4 h-4 text-slate-500" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{kpis.participationRate}%</p>
+            <p className="text-2xl font-bold text-slate-900">{kpis.participationRate}%</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
               {kpis.activeMembers} active / {kpis.totalMembers} total members
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
-              <span className="text-[11px] font-bold uppercase">Task Completion</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <span className="text-[11px] font-semibold uppercase">Task Completion</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
-            <p className="text-2xl font-black text-slate-900">{kpis.taskCompletionRate}%</p>
+            <p className="text-2xl font-bold text-slate-900">{kpis.taskCompletionRate}%</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
               {kpis.completedTasks} of {kpis.totalTasks} deliverables done
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
-              <span className="text-[11px] font-bold uppercase">Lead Burnout Score</span>
-              <Flame className="w-4 h-4 text-amber-500" />
+              <span className="text-[11px] font-semibold uppercase">Lead Burnout Score</span>
+              <Flame className="w-4 h-4 text-slate-700" />
             </div>
-            <p className="text-2xl font-black text-amber-600">{kpis.burnoutIndex}/100</p>
+            <p className="text-2xl font-bold text-slate-900">{kpis.burnoutIndex}/100</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Risk Level: <strong>{kpis.burnoutRiskLevel}</strong>
+              Risk Level: <strong className="text-slate-700">{kpis.burnoutRiskLevel}</strong>
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
-              <span className="text-[11px] font-bold uppercase">Member CSAT Rating</span>
-              <Award className="w-4 h-4 text-purple-500" />
+              <span className="text-[11px] font-semibold uppercase">Member CSAT Rating</span>
+              <Award className="w-4 h-4 text-slate-700" />
             </div>
-            <p className="text-2xl font-black text-purple-600">{kpis.averageSatisfaction} / 5.0</p>
+            <p className="text-2xl font-bold text-slate-900">{kpis.averageSatisfaction} / 5.0</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
               From {feedbacks.length} submitted reviews
             </p>
@@ -181,7 +181,7 @@ export default function ClubAnalyticsPage() {
         {/* Charts & Trends Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Chart 1: Task Completion Velocity Trend */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-extrabold text-sm text-slate-900">
@@ -201,11 +201,11 @@ export default function ClubAnalyticsPage() {
               <div className="h-48 flex items-end justify-between gap-3 px-2 border-b border-slate-200 pb-2">
                 {weeklyTrends.map((w, idx) => (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                    <span className="text-[10px] font-bold text-indigo-600 group-hover:scale-110 transition">
+                    <span className="text-[10px] font-bold text-slate-900 group-hover:scale-110 transition">
                       {w.tasksCompleted}
                     </span>
                     <div
-                      className="w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-xl transition-all duration-500 group-hover:opacity-90"
+                      className="w-full bg-slate-900 rounded-lg transition-all duration-500 group-hover:opacity-90"
                       style={{ height: `${(w.tasksCompleted / 22) * 100}%` }}
                     ></div>
                     <span className="text-[10px] font-bold text-slate-500 truncate">{w.week}</span>
@@ -216,17 +216,17 @@ export default function ClubAnalyticsPage() {
           </div>
 
           {/* Chart 2: Active Member Participation Trend */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-sm text-slate-900">
+                <h3 className="font-bold text-sm text-slate-900">
                   Active Member Retention Curve
                 </h3>
                 <p className="text-xs text-slate-500">
                   Weekly active attendees without dropping out
                 </p>
               </div>
-              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded">
                 Zero Dropouts
               </span>
             </div>
@@ -236,14 +236,14 @@ export default function ClubAnalyticsPage() {
               <div className="h-48 flex items-end justify-between gap-3 px-2 border-b border-slate-200 pb-2">
                 {weeklyTrends.map((w, idx) => (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                    <span className="text-[10px] font-bold text-purple-600 group-hover:scale-110 transition">
+                    <span className="text-[10px] font-semibold text-slate-700 group-hover:scale-110 transition">
                       {w.activeMembers}
                     </span>
                     <div
-                      className="w-full bg-gradient-to-t from-purple-600 to-purple-400 rounded-xl transition-all duration-500 group-hover:opacity-90"
+                      className="w-full bg-slate-900 rounded-md transition-all duration-300 group-hover:bg-slate-800"
                       style={{ height: `${(w.activeMembers / 40) * 100}%` }}
                     ></div>
-                    <span className="text-[10px] font-bold text-slate-500 truncate">{w.week}</span>
+                    <span className="text-[10px] font-medium text-slate-500 truncate">{w.week}</span>
                   </div>
                 ))}
               </div>
@@ -252,10 +252,10 @@ export default function ClubAnalyticsPage() {
         </div>
 
         {/* Club Comparison Table */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-extrabold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-slate-900">
                 Inter-Club Participation & Burnout Benchmark
               </h3>
               <p className="text-xs text-slate-500">
@@ -264,7 +264,7 @@ export default function ClubAnalyticsPage() {
             </div>
             <Link
               href="/feedback"
-              className="text-xs font-bold text-indigo-600 hover:underline"
+              className="text-xs font-semibold text-slate-900 hover:underline"
             >
               Review Member Feedback →
             </Link>
@@ -291,25 +291,25 @@ export default function ClubAnalyticsPage() {
                       <td className="py-3 px-4 font-bold text-slate-900">{c.name}</td>
                       <td className="py-3 px-4 text-slate-600">{c.leadName}</td>
                       <td className="py-3 px-4 font-semibold text-slate-800">{c.memberCount}</td>
-                      <td className="py-3 px-4 text-emerald-600 font-bold">{clubKPI.completedTasks} completed</td>
+                      <td className="py-3 px-4 text-emerald-700 font-medium">{clubKPI.completedTasks} completed</td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                          className={`px-2 py-0.5 rounded font-semibold text-[10px] ${
                             c.burnoutScore >= 60
-                              ? 'bg-rose-100 text-rose-700'
+                              ? 'bg-rose-100 text-rose-800'
                               : c.burnoutScore >= 45
-                              ? 'bg-amber-100 text-amber-700'
-                              : 'bg-emerald-100 text-emerald-700'
+                              ? 'bg-slate-100 text-slate-800 border border-slate-300'
+                              : 'bg-emerald-100 text-emerald-800'
                           }`}
                         >
                           {c.burnoutScore}/100
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-bold text-purple-600">{clubKPI.averageSatisfaction} / 5</td>
+                      <td className="py-3 px-4 font-semibold text-slate-900">{clubKPI.averageSatisfaction} / 5</td>
                       <td className="py-3 px-4 text-right">
                         <Link
                           href={`/clubs/${c.id}`}
-                          className="text-indigo-600 font-semibold hover:underline"
+                          className="text-slate-900 font-semibold hover:underline"
                         >
                           View Profile
                         </Link>

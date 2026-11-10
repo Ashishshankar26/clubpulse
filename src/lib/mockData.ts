@@ -4,6 +4,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_aarav',
     name: 'Aarav Sharma',
+    registrationNumber: '2023BCSE014',
+    password: 'college123',
     email: 'aarav.sharma@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
@@ -17,6 +19,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_priya',
     name: 'Priya Patel',
+    registrationNumber: '2022BIT088',
+    password: 'college123',
     email: 'priya.patel@college.edu',
     role: 'club_lead',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
@@ -30,6 +34,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_dean_rajesh',
     name: 'Dr. Rajesh Kumar',
+    registrationNumber: 'FAC2018ADMIN',
+    password: 'college123',
     email: 'rajesh.kumar@college.edu',
     role: 'admin',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
@@ -43,6 +49,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_rohan',
     name: 'Rohan Mehta',
+    registrationNumber: '2024BECE052',
+    password: 'college123',
     email: 'rohan.mehta@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
@@ -55,6 +63,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_ananya',
     name: 'Ananya Iyer',
+    registrationNumber: '2023BCSE102',
+    password: 'college123',
     email: 'ananya.iyer@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
@@ -67,6 +77,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_tanvi',
     name: 'Tanvi Verma',
+    registrationNumber: '2023BBBA045',
+    password: 'college123',
     email: 'tanvi.verma@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -79,6 +91,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_kabir',
     name: 'Kabir Singh',
+    registrationNumber: '2022BMECH019',
+    password: 'college123',
     email: 'kabir.singh@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
@@ -91,6 +105,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr_siddharth',
     name: 'Siddharth Joshi',
+    registrationNumber: '2024BLIT008',
+    password: 'college123',
     email: 'siddharth.j@college.edu',
     role: 'student',
     avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',

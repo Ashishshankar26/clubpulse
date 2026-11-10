@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import AppShell from '@/components/layout/AppShell';
 import { useClubPulse } from '@/context/ClubPulseContext';
+import { getAvatarUrl } from '@/lib/permissions';
 import {
   Flame,
   ShieldAlert,
@@ -19,10 +20,57 @@ import {
 } from 'lucide-react';
 
 export default function WorkloadBurnoutRadarPage() {
-  const { clubs, tasks, updateTaskStatus } = useClubPulse();
+  const { clubs, tasks, updateTaskStatus, sendNudge, currentUser } = useClubPulse();
 
   const [selectedClubId, setSelectedClubId] = useState<string>(clubs[0]?.id || '');
   const [rebalanceTriggered, setRebalanceTriggered] = useState(false);
+  const [nudgedMemberIds, setNudgedMemberIds] = useState<Set<string>>(new Set());
+  const [nudgeFeedback, setNudgeFeedback] = useState<string | null>(null);
+
+  // If student, display access-restricted view directing them to their tasks
+  if (currentUser.role === 'student') {
+    return (
+      <AppShell>
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-xl p-8 border border-slate-200/90 shadow-xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center mx-auto">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+              Role Access Restricted
+            </span>
+            <h2 className="text-xl font-bold text-slate-900 mt-2">
+              Leadership Burnout & Workload Radar
+            </h2>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Task concentration telemetry, Gini coefficient rebalancing, and ghost member monitoring are tools reserved for Club Leads and Council Officers. As a member, you can track and submit your assigned deliverables on your task board.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/my-tasks"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+            >
+              <span>View My Tasks</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const handleNudgeMember = (userId: string, userName: string) => {
+    const res = sendNudge(userId, userName, club.name);
+    if (res.success) {
+      setNudgedMemberIds(prev => new Set(prev).add(userId));
+      setNudgeFeedback(res.message);
+      setTimeout(() => setNudgeFeedback(null), 4000);
+    } else {
+      setNudgeFeedback(res.message);
+      setTimeout(() => setNudgeFeedback(null), 4000);
+    }
+  };
 
   const club = clubs.find(c => c.id === selectedClubId) || clubs[0];
   const clubTasks = tasks.filter(t => t.clubId === club.id);
@@ -80,7 +128,7 @@ export default function WorkloadBurnoutRadarPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Module 2 • Burnout Early Warning
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
@@ -95,7 +143,7 @@ export default function WorkloadBurnoutRadarPage() {
           <select
             value={selectedClubId}
             onChange={e => setSelectedClubId(e.target.value)}
-            className="self-start md:self-auto p-2.5 rounded-2xl border border-slate-200 bg-white font-bold text-xs shadow-sm"
+            className="self-start md:self-auto p-2.5 rounded-xl border border-slate-200 bg-white font-medium text-xs shadow-xs focus:outline-none focus:border-slate-900"
           >
             {clubs.map(c => (
               <option key={c.id} value={c.id}>
@@ -105,24 +153,18 @@ export default function WorkloadBurnoutRadarPage() {
           </select>
         </div>
 
-        {/* Burnout Meter Banner */}
-        <div
-          className={`rounded-3xl p-6 sm:p-8 text-white shadow-xl transition-all duration-300 ${
-            isSevereBurnout
-              ? 'bg-gradient-to-br from-amber-600 via-rose-600 to-red-700'
-              : 'bg-gradient-to-br from-indigo-700 to-purple-800'
-          }`}
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/20">
+        {/* Burnout Assessment Panel */}
+        <div className="rounded-xl p-5 sm:p-6 bg-white border border-slate-200/90 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                <Flame className="w-8 h-8 text-white animate-pulse" />
+              <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center shrink-0">
+                <Flame className="w-5 h-5 text-slate-700" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full">
-                  Real-time Workload Analysis
+                <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                  Workload Concentration Analysis
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black mt-1">
+                <h2 className="text-xl font-bold text-slate-900 mt-1">
                   {club.shortName} Burnout Risk Index: {club.burnoutScore}/100
                 </h2>
               </div>
@@ -130,56 +172,56 @@ export default function WorkloadBurnoutRadarPage() {
 
             <button
               onClick={handleSimulateRebalance}
-              className="px-4 py-2.5 rounded-xl bg-white text-slate-900 font-extrabold text-xs shadow-lg hover:bg-slate-100 transition flex items-center gap-2 self-start md:self-auto"
+              className="px-3.5 py-2 rounded-lg bg-slate-900 text-white font-medium text-xs hover:bg-slate-800 transition flex items-center gap-2 self-start md:self-auto shadow-xs"
             >
-              <Zap className="w-4 h-4 text-amber-600 fill-amber-500" />
+              <Zap className="w-4 h-4 text-slate-300" />
               <span>Simulate Rebalancing Recommendations</span>
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="bg-black/15 p-4 rounded-2xl border border-white/10">
-              <span className="text-white/70 block">Highest Load Bearer</span>
-              <p className="text-lg font-black mt-1">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
+              <span className="text-slate-500 block font-medium">Highest Load Bearer</span>
+              <p className="text-base font-bold text-slate-900 mt-1">
                 {topLoaded ? `${topLoaded.name} (${topLoaded.percentage}% of tasks)` : 'None'}
               </p>
-              <p className="text-[11px] text-white/60 mt-0.5">
-                {isSevereBurnout ? '⚠️ Exceeds safe threshold of 35%' : 'Within healthy range'}
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                {isSevereBurnout ? 'Exceeds recommended threshold of 35%' : 'Within healthy range'}
               </p>
             </div>
 
-            <div className="bg-black/15 p-4 rounded-2xl border border-white/10">
-              <span className="text-white/70 block">Idle Members with 0 Tasks</span>
-              <p className="text-lg font-black mt-1">{idleMembers.length} Members</p>
-              <p className="text-[11px] text-white/60 mt-0.5">Available for task delegation</p>
+            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
+              <span className="text-slate-500 block font-medium">Idle Members (0 Tasks)</span>
+              <p className="text-base font-bold text-slate-900 mt-1">{idleMembers.length} Members</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Available for task delegation</p>
             </div>
 
-            <div className="bg-black/15 p-4 rounded-2xl border border-white/10">
-              <span className="text-white/70 block">Total Active Tasks</span>
-              <p className="text-lg font-black mt-1">{openTasks.length} In Progress</p>
-              <p className="text-[11px] text-white/60 mt-0.5">Across all club sub-teams</p>
+            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
+              <span className="text-slate-500 block font-medium">Total Active Tasks</span>
+              <p className="text-base font-bold text-slate-900 mt-1">{openTasks.length} In Progress</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Across all club sub-teams</p>
             </div>
           </div>
         </div>
 
         {/* Rebalance Toast */}
         {rebalanceTriggered && (
-          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs font-bold flex items-start gap-3 animate-in fade-in">
-            <Sparkles className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium flex items-start gap-3 animate-in fade-in">
+            <Sparkles className="w-5 h-5 text-slate-800 shrink-0 mt-0.5" />
             <div>
-              <p>Rebalancing Recommendations Calculated:</p>
-              <p className="font-normal text-indigo-800 mt-0.5">
-                Suggest reassigning 2 event logistics tasks from {club.leadName} to available general members (Aarav Sharma and Ananya Iyer). This reduces lead load from 65% down to 32%!
+              <p className="font-semibold text-slate-900">Rebalancing Recommendations Calculated:</p>
+              <p className="font-normal text-slate-700 mt-0.5">
+                Suggest reassigning 2 event logistics tasks from {club.leadName} to available general members. This reduces lead load from 65% down to 32%!
               </p>
             </div>
           </div>
         )}
 
         {/* Workload Breakdown Chart / Visualizer */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+        <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-extrabold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-slate-900">
                 Individual Task Concentration vs Safe Threshold (35%)
               </h3>
               <p className="text-xs text-slate-500">
@@ -198,7 +240,7 @@ export default function WorkloadBurnoutRadarPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <img
-                        src={item.avatar}
+                        src={getAvatarUrl(item.avatar, item.name)}
                         alt={item.name}
                         className="w-6 h-6 rounded-full object-cover"
                       />
@@ -213,10 +255,10 @@ export default function WorkloadBurnoutRadarPage() {
                       <span
                         className={`font-black ${
                           isOverloaded
-                            ? 'text-rose-600'
+                            ? 'text-slate-900 underline decoration-2'
                             : isIdle
-                            ? 'text-amber-600'
-                            : 'text-indigo-600'
+                            ? 'text-slate-400'
+                            : 'text-slate-900'
                         }`}
                       >
                         {item.percentage}%
@@ -225,14 +267,14 @@ export default function WorkloadBurnoutRadarPage() {
                   </div>
 
                   {/* Horizontal Bar */}
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-700 ${
                         isOverloaded
-                          ? 'bg-rose-500'
+                          ? 'bg-slate-900'
                           : isIdle
-                          ? 'bg-amber-300'
-                          : 'bg-indigo-600'
+                          ? 'bg-slate-300'
+                          : 'bg-slate-700'
                       }`}
                       style={{ width: `${Math.max(4, item.percentage)}%` }}
                     ></div>
@@ -244,11 +286,11 @@ export default function WorkloadBurnoutRadarPage() {
         </div>
 
         {/* Ghost Members Alert Card */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-rose-500" />
             <div>
-              <h3 className="font-extrabold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-slate-900">
                 Ghost Member Disengagement Early Warning
               </h3>
               <p className="text-xs text-slate-500">
@@ -257,19 +299,26 @@ export default function WorkloadBurnoutRadarPage() {
             </div>
           </div>
 
+          {nudgeFeedback && (
+            <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{nudgeFeedback}</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {club.members
               .filter(m => m.isGhostRisk || m.participationRate < 30)
               .map(m => (
                 <div
                   key={m.userId}
-                  className="p-4 rounded-2xl bg-rose-50/40 border border-rose-200 flex items-center justify-between text-xs"
+                  className="p-4 rounded-xl bg-rose-50/40 border border-rose-200 flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-3">
                     <img
-                      src={m.avatar}
+                      src={getAvatarUrl(m.avatar, m.userName)}
                       alt={m.userName}
-                      className="w-10 h-10 rounded-xl object-cover grayscale"
+                      className="w-10 h-10 rounded-lg object-cover grayscale"
                     />
                     <div>
                       <p className="font-bold text-slate-900">{m.userName}</p>
@@ -280,12 +329,27 @@ export default function WorkloadBurnoutRadarPage() {
                     </div>
                   </div>
 
-                  <Link
-                    href="/members"
-                    className="px-3 py-1.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-300 transition"
+                  <button
+                    onClick={() => handleNudgeMember(m.userId, m.userName)}
+                    disabled={nudgedMemberIds.has(m.userId)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shrink-0 ${
+                      nudgedMemberIds.has(m.userId)
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
+                        : 'bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-xs'
+                    }`}
                   >
-                    Nudge
-                  </Link>
+                    {nudgedMemberIds.has(m.userId) ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Nudged ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3 h-3 text-slate-400" />
+                        <span>Send Nudge</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               ))}
           </div>

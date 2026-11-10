@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useClubPulse } from '@/context/ClubPulseContext';
+import { getManagedClubs, isTaskAssignedToUser } from '@/lib/permissions';
 import {
   LayoutDashboard,
   Compass,
@@ -19,275 +20,276 @@ import {
   Bell,
   Sparkles,
   Settings,
-  HelpCircle,
   Shield,
   Layers,
   ArrowUpRight,
+  LogIn,
 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { currentUser, applications, tasks } = useClubPulse();
+  const { currentUser, clubs, applications, tasks, isAuthenticated } = useClubPulse();
 
-  // Pending applications for lead badge
-  const pendingAppsCount = applications.filter(
-    a => a.status === 'pending' || a.status === 'under_review'
-  ).length;
+  const myManagedClubIds = new Set(getManagedClubs(currentUser, clubs).map(c => c.id));
 
-  // Pending review tasks for lead badge
-  const pendingTasksReviewCount = tasks.filter(
-    t => t.status === 'under_review'
-  ).length;
+  const pendingAppsCount =
+    currentUser.role === 'student'
+      ? 0
+      : applications.filter(
+          a =>
+            (currentUser.role === 'admin' || myManagedClubIds.has(a.clubId)) &&
+            (a.status === 'pending' || a.status === 'under_review')
+        ).length;
+
+  const pendingTasksReviewCount =
+    currentUser.role === 'student'
+      ? 0
+      : tasks.filter(
+          t =>
+            (currentUser.role === 'admin' || myManagedClubIds.has(t.clubId)) &&
+            t.status === 'under_review' &&
+            !isTaskAssignedToUser(t, currentUser)
+        ).length;
 
   const myTasksCount = tasks.filter(
-    t => t.assigneeId === currentUser.id && t.status !== 'completed'
+    t => isTaskAssignedToUser(t, currentUser) && t.status !== 'completed'
   ).length;
 
-  return (
-    <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200 bg-white/70 backdrop-blur-md min-h-[calc(100vh-4rem)] p-4 select-none shrink-0">
-      {/* Role Badge Indicator */}
-      <div className="mb-4 p-3 rounded-2xl bg-gradient-to-br from-indigo-50 to-slate-100 border border-indigo-100/80">
-        <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
-          <span>Active Role</span>
-          <span className="flex items-center gap-1 font-bold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-full text-[10px] uppercase">
-            {currentUser.role === 'club_lead'
-              ? 'Lead'
-              : currentUser.role === 'admin'
-              ? 'Dean'
-              : 'Student'}
-          </span>
-        </div>
-        <p className="font-bold text-slate-900 text-sm truncate">{currentUser.name}</p>
-        <p className="text-[11px] text-slate-500 truncate mt-0.5">
-          {currentUser.department}
-        </p>
-      </div>
+  const navItemClass = (path: string) => {
+    const isActive = pathname === path;
+    return `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${
+      isActive
+        ? 'bg-slate-900 text-white font-semibold'
+        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+    }`;
+  };
 
-      <div className="flex-1 space-y-6 overflow-y-auto pr-1">
+  return (
+    <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200/90 bg-white min-h-[calc(100vh-4rem)] p-4 select-none shrink-0">
+      {/* Active Profile Header Card */}
+      {!isAuthenticated ? (
+        <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/90 text-left">
+          <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+            <span className="text-[11px]">Campus Visitor</span>
+            <span className="font-medium text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[10px]">
+              Guest
+            </span>
+          </div>
+          <p className="font-semibold text-slate-800 text-xs mt-1">Sign in with Registration No.</p>
+          <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+            Access assigned tasks, club memberships, and credits.
+          </p>
+          <Link
+            href="/login"
+            className="mt-2.5 w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Sign In</span>
+          </Link>
+        </div>
+      ) : (
+        <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/90">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/settings"
+              title="Change profile picture in Settings"
+              className="relative group shrink-0"
+            >
+              <img
+                src={currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentUser.name)}`}
+                alt={currentUser.name}
+                className="w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 group-hover:ring-slate-900 transition"
+              />
+            </Link>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span className="font-semibold text-slate-900 text-xs truncate">{currentUser.name}</span>
+                <span className="font-semibold text-slate-800 bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wide shrink-0">
+                  {currentUser.role === 'club_lead'
+                    ? 'Lead'
+                    : currentUser.role === 'admin'
+                    ? 'Dean'
+                    : 'Student'}
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-slate-600 font-medium truncate mt-0.5">
+                {currentUser.registrationNumber}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 space-y-5 overflow-y-auto pr-1">
         {/* Core Nav */}
         <div>
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
             Overview
           </p>
-          <div className="space-y-1">
-            <Link
-              href="/dashboard"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/dashboard'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Dashboard</span>
+          <div className="space-y-0.5">
+            <Link href="/dashboard" className={navItemClass('/dashboard')}>
+              <div className="flex items-center gap-2.5">
+                <LayoutDashboard className="w-4 h-4 opacity-80" />
+                <span>Dashboard</span>
+              </div>
             </Link>
           </div>
         </div>
 
         {/* Module 1: Clubs & Recruitment */}
         <div>
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Clubs & Recruitment
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            Clubs & Discovery
           </p>
-          <div className="space-y-1">
-            <Link
-              href="/clubs"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/clubs'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <Compass className="w-4 h-4" />
-              <span>Discover Clubs</span>
-            </Link>
-
-            <Link
-              href="/my-clubs"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/my-clubs'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>My Clubs & Status</span>
-            </Link>
-
-            <Link
-              href="/recruitment"
-              className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/recruitment'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Users className="w-4 h-4" />
-                <span>Recruitment Pipeline</span>
+          <div className="space-y-0.5">
+            <Link href="/clubs" className={navItemClass('/clubs')}>
+              <div className="flex items-center gap-2.5">
+                <Compass className="w-4 h-4 opacity-80" />
+                <span>Discover Clubs</span>
               </div>
-              {pendingAppsCount > 0 && currentUser.role !== 'student' && (
-                <span className="text-[10px] bg-amber-500 text-white font-bold px-1.5 py-0.5 rounded-full">
-                  {pendingAppsCount}
-                </span>
-              )}
             </Link>
 
-            <Link
-              href="/members"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/members'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>Member Directory</span>
+            <Link href="/my-clubs" className={navItemClass('/my-clubs')}>
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 opacity-80" />
+                <span>My Clubs</span>
+              </div>
             </Link>
 
-            <Link
-              href="/onboarding"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/onboarding'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Member Onboarding</span>
+            {/* Recruitment: Strictly for Club Leads & Administrators */}
+            {(currentUser.role === 'club_lead' || currentUser.role === 'admin') && (
+              <Link href="/recruitment" className={navItemClass('/recruitment')}>
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4 opacity-80" />
+                  <span>Recruitment</span>
+                </div>
+                {pendingAppsCount > 0 && (
+                  <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
+                    {pendingAppsCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            <Link href="/members" className={navItemClass('/members')}>
+              <div className="flex items-center gap-2.5">
+                <UserCheck className="w-4 h-4 opacity-80" />
+                <span>Club Roster</span>
+              </div>
             </Link>
           </div>
         </div>
 
-        {/* Module 2: Tasks & Contributions */}
+        {/* Module 2: Operations & Tasks */}
         <div>
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Tasks & Workload
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            Operations & Tasks
           </p>
-          <div className="space-y-1">
-            <Link
-              href="/my-tasks"
-              className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/my-tasks'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <CheckSquare className="w-4 h-4" />
-                <span>My Assigned Tasks</span>
+          <div className="space-y-0.5">
+            {/* Task Board: For Club Leads & Admins to create & delegate tasks */}
+            {(currentUser.role === 'club_lead' || currentUser.role === 'admin') && (
+              <Link href="/tasks" className={navItemClass('/tasks')}>
+                <div className="flex items-center gap-2.5">
+                  <Kanban className="w-4 h-4 opacity-80" />
+                  <span>Task Board</span>
+                </div>
+                {pendingTasksReviewCount > 0 && (
+                  <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
+                    {pendingTasksReviewCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            <Link href="/my-tasks" className={navItemClass('/my-tasks')}>
+              <div className="flex items-center gap-2.5">
+                <CheckSquare className="w-4 h-4 opacity-80" />
+                <span>My Tasks</span>
               </div>
               {myTasksCount > 0 && (
-                <span className="text-[10px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.5 rounded-full">
+                <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
                   {myTasksCount}
                 </span>
               )}
             </Link>
 
-            <Link
-              href="/tasks"
-              className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/tasks'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Kanban className="w-4 h-4" />
-                <span>Kanban Task Board</span>
-              </div>
-              {pendingTasksReviewCount > 0 && currentUser.role !== 'student' && (
-                <span className="text-[10px] bg-purple-500 text-white font-bold px-1.5 py-0.5 rounded-full">
-                  {pendingTasksReviewCount}
-                </span>
-              )}
-            </Link>
-
-            <Link
-              href="/workload"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/workload'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <Flame className="w-4 h-4 text-amber-500" />
-              <span>Burnout & Workload</span>
-            </Link>
-
-            <Link
-              href="/contributions"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/contributions'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <Award className="w-4 h-4" />
-              <span>Verified Ledger</span>
-            </Link>
+            {/* Burnout Radar: Dedicated to Club Leadership */}
+            {(currentUser.role === 'club_lead' || currentUser.role === 'admin') && (
+              <Link href="/workload" className={navItemClass('/workload')}>
+                <div className="flex items-center gap-2.5">
+                  <Flame className="w-4 h-4 opacity-80" />
+                  <span>Burnout Radar</span>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Module 3: Feedback & Analytics */}
+        {/* Module 3: Portfolio & Credits */}
         <div>
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Feedback & Health
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            Recognition & Health
           </p>
-          <div className="space-y-1">
-            <Link
-              href="/analytics"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/analytics'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Club Analytics</span>
+          <div className="space-y-0.5">
+            <Link href="/contributions" className={navItemClass('/contributions')}>
+              <div className="flex items-center gap-2.5">
+                <Award className="w-4 h-4 opacity-80" />
+                <span>Verified Credits</span>
+              </div>
             </Link>
 
-            <Link
-              href="/feedback"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/feedback'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <MessageSquareHeart className="w-4 h-4" />
-              <span>Pulse 360 Feedback</span>
+            {(currentUser.role === 'club_lead' || currentUser.role === 'admin') && (
+              <Link href="/analytics" className={navItemClass('/analytics')}>
+                <div className="flex items-center gap-2.5">
+                  <BarChart3 className="w-4 h-4 opacity-80" />
+                  <span>Analytics</span>
+                </div>
+              </Link>
+            )}
+
+            <Link href="/feedback" className={navItemClass('/feedback')}>
+              <div className="flex items-center gap-2.5">
+                <MessageSquareHeart className="w-4 h-4 opacity-80" />
+                <span>Pulse Survey</span>
+              </div>
             </Link>
 
-            <Link
-              href="/reports"
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition ${
-                pathname === '/reports'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              <span>Printable Report</span>
-            </Link>
+            {(currentUser.role === 'admin' || currentUser.role === 'club_lead') && (
+              <Link href="/reports" className={navItemClass('/reports')}>
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-4 h-4 opacity-80" />
+                  <span>Governance Report</span>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Demo Switcher Quick Card */}
-        <div className="pt-2">
-          <Link
-            href="/demo-select"
-            className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md hover:shadow-indigo-500/25 transition group"
-          >
-            <div>
-              <p className="text-xs font-bold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                Demo Personas
-              </p>
-              <p className="text-[10px] text-indigo-100">Try Member, Lead, Dean</p>
-            </div>
-            <ArrowUpRight className="w-4 h-4 text-indigo-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
-          </Link>
+        {/* Quick Links at Bottom */}
+        <div className="pt-2 space-y-1.5 border-t border-slate-100">
+          {isAuthenticated ? (
+            <Link
+              href="/settings"
+              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80 transition text-xs font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <Settings className="w-3.5 h-3.5 text-slate-500" />
+                <span>Account & Security</span>
+              </span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80 transition text-xs font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <LogIn className="w-3.5 h-3.5 text-slate-500" />
+                <span>Sign In with Reg No.</span>
+              </span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+          )}
         </div>
       </div>
     </aside>

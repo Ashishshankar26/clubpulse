@@ -11,6 +11,8 @@ export type ClubCategory = 'Technology' | 'Design & Creative' | 'Entrepreneurshi
 export interface User {
   id: string;
   name: string;
+  registrationNumber: string;
+  password?: string;
   email: string;
   role: UserRole;
   avatar: string;

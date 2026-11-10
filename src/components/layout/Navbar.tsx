@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useClubPulse } from '@/context/ClubPulseContext';
 import {
@@ -17,387 +16,314 @@ import {
   Sparkles,
   Menu,
   X,
-  ExternalLink,
+  LogIn,
+  LogOut,
+  Settings,
+  Compass,
+  CheckSquare,
+  BarChart2,
+  Camera,
 } from 'lucide-react';
+import ProfilePictureModal from '@/components/profile/ProfilePictureModal';
 
 export default function Navbar() {
   const pathname = usePathname();
   const {
     currentUser,
-    users,
-    switchUser,
-    switchRole,
+    isAuthenticated,
     notifications,
     unreadNotificationCount,
     markNotificationAsRead,
     markAllNotificationsAsRead,
+    logout,
   } = useClubPulse();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
+  // Dynamic role-authorized navigation links: Only show options authorized for this role
+  const allNavLinks = [
+    { href: '/dashboard', label: 'Dashboard', roles: ['student', 'club_lead', 'admin'] },
+    { href: '/clubs', label: 'Discover Clubs', roles: ['student', 'club_lead', 'admin'] },
+    { href: '/my-clubs', label: 'My Clubs', roles: ['student'] },
+    { href: '/my-tasks', label: 'My Tasks', roles: ['student'] },
+    { href: '/contributions', label: 'Verified Credits', roles: ['student'] },
+    { href: '/recruitment', label: 'Recruitment', roles: ['club_lead', 'admin'] },
+    { href: '/tasks', label: 'Task Board', roles: ['club_lead', 'admin'] },
+    { href: '/workload', label: 'Burnout Radar', roles: ['club_lead', 'admin'] },
+    { href: '/analytics', label: 'Analytics', roles: ['club_lead', 'admin'] },
+    { href: '/reports', label: 'Governance', roles: ['admin'] },
+  ];
+
+  const navLinks = allNavLinks.filter(item => item.roles.includes(currentUser.role));
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Brand Logo */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <Activity className="w-5 h-5 animate-pulse" />
+              <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-xs group-hover:bg-slate-800 transition">
+                <Activity className="w-4 h-4 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-900 bg-clip-text text-transparent">
+                <span className="font-bold text-base tracking-tight text-slate-900 leading-tight">
                   Club.ing
                 </span>
-                <span className="text-[10px] tracking-wider text-slate-400 font-semibold uppercase -mt-1">
+                <span className="text-[10px] tracking-wider text-slate-400 font-medium uppercase -mt-0.5">
                   Campus Org OS
                 </span>
               </div>
             </Link>
 
-            {/* Quick Header Nav */}
-            <nav className="hidden md:flex items-center space-x-1 pl-4 border-l border-slate-200">
-              <Link
-                href="/dashboard"
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  pathname === '/dashboard'
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/clubs"
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  pathname.startsWith('/clubs')
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                Discover Clubs
-              </Link>
-              <Link
-                href="/tasks"
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  pathname.startsWith('/tasks')
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                Task Board
-              </Link>
-              <Link
-                href="/workload"
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5 ${
-                  pathname.startsWith('/workload')
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <Flame className="w-3.5 h-3.5 text-amber-500" />
-                Burnout Radar
-              </Link>
-              <Link
-                href="/analytics"
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  pathname.startsWith('/analytics')
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                Analytics
-              </Link>
-            </nav>
+            {/* Top Navigation Links - Only visible when authenticated */}
+            {isAuthenticated && (
+              <nav className="hidden md:flex items-center space-x-1 pl-4 border-l border-slate-200">
+                {navLinks.map(item => {
+                  const isActive =
+                    item.href === '/dashboard'
+                      ? pathname === '/dashboard'
+                      : pathname.startsWith(item.href);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                        isActive
+                          ? 'bg-slate-100 text-slate-900 font-semibold'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
           </div>
 
-          {/* Right Header Controls */}
-          <div className="flex items-center gap-3">
-            {/* Demo Persona Switcher pill */}
-            <Link
-              href="/demo-select"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold border border-indigo-200 transition"
-              title="Explore all demo personas and accounts"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Switch Persona</span>
-            </Link>
-
-            {/* Notifications Popover */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition focus:outline-none"
-                aria-label="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                {unreadNotificationCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow">
-                    {unreadNotificationCount}
-                  </span>
-                )}
-              </button>
-
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white shadow-2xl border border-slate-200 py-3 z-50 animate-in fade-in slide-in-from-top-2">
-                  <div className="px-4 pb-2 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-slate-900 text-sm">Notifications</h3>
-                      <p className="text-xs text-slate-500">Demo alerts for {currentUser.name}</p>
-                    </div>
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2.5">
+            {!isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign In</span>
+                </Link>
+                <Link
+                  href="/login?tab=register"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition"
+                >
+                  <span>Register</span>
+                </Link>
+              </div>
+            ) : (
+              <>
+                {/* Notifications Popover */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition focus:outline-none"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="w-4 h-4" />
                     {unreadNotificationCount > 0 && (
-                      <button
-                        onClick={markAllNotificationsAsRead}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
-                      >
-                        Mark all read
-                      </button>
+                      <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-slate-900" />
                     )}
-                  </div>
+                  </button>
 
-                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
-                    {notifications.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-slate-400">
-                        No notifications for this account yet.
-                      </div>
-                    ) : (
-                      notifications.map(n => (
-                        <div
-                          key={n.id}
-                          onClick={() => markNotificationAsRead(n.id)}
-                          className={`p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 ${
-                            !n.read ? 'bg-indigo-50/40' : ''
-                          }`}
-                        >
-                          <div className="mt-0.5">
-                            {n.type === 'burnout_alert' ? (
-                              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-                                <AlertTriangle className="w-4 h-4" />
-                              </div>
-                            ) : n.type === 'task' ? (
-                              <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                                <CheckCircle2 className="w-4 h-4" />
-                              </div>
-                            ) : n.type === 'recruitment' ? (
-                              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                <Users className="w-4 h-4" />
-                              </div>
-                            ) : (
-                              <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
-                                <Bell className="w-4 h-4" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-slate-800 leading-tight">
-                              {n.title}
-                            </p>
-                            <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">
-                              {n.message}
-                            </p>
-                            <span className="text-[10px] text-slate-400 mt-1 block">
-                              {n.createdAt}
-                            </span>
-                          </div>
-                          {!n.read && (
-                            <span className="w-2 h-2 rounded-full bg-indigo-600 mt-1.5 shrink-0" />
-                          )}
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in slide-in-from-top-1">
+                      <div className="px-4 pb-2 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-slate-900 text-xs">Notifications</h3>
+                          <p className="text-[11px] text-slate-500">Alerts for {currentUser.name}</p>
                         </div>
-                      ))
-                    )}
-                  </div>
-                  <div className="px-4 pt-2 border-t border-slate-100 text-center">
-                    <Link
-                      href="/notifications"
-                      onClick={() => setShowNotifications(false)}
-                      className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
-                    >
-                      View all notification logs →
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
+                        {unreadNotificationCount > 0 && (
+                          <button
+                            onClick={markAllNotificationsAsRead}
+                            className="text-xs text-slate-600 hover:text-slate-900 font-medium"
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                      </div>
 
-            {/* User Profile Pill & Quick Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition border border-transparent hover:border-slate-200"
-              >
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-600/30"
-                />
-                <div className="hidden sm:flex flex-col text-left">
-                  <span className="text-xs font-bold text-slate-800 leading-tight">
-                    {currentUser.name}
-                  </span>
-                  <span className="text-[10px] font-medium text-slate-500 capitalize">
-                    {currentUser.role === 'club_lead'
-                      ? 'GDSC Lead'
-                      : currentUser.role === 'admin'
-                      ? 'Dean Council'
-                      : 'Member (3rd Yr)'}
-                  </span>
+                      <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 text-xs">
+                        {notifications.length === 0 ? (
+                          <div className="py-8 text-center text-slate-400 text-xs">
+                            No notifications yet.
+                          </div>
+                        ) : (
+                          notifications.map(n => (
+                            <div
+                              key={n.id}
+                              onClick={() => markNotificationAsRead(n.id)}
+                              className={`p-3 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 ${
+                                !n.read ? 'bg-slate-50/70' : ''
+                              }`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-slate-900">{n.title}</p>
+                                <p className="text-slate-500 mt-0.5 leading-relaxed">{n.message}</p>
+                                <span className="text-[10px] text-slate-400 mt-1 block">
+                                  {n.createdAt}
+                                </span>
+                              </div>
+                              {!n.read && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-900 mt-1.5 shrink-0" />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </button>
 
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                  <div className="px-4 py-2 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-900">{currentUser.name}</p>
-                    <p className="text-[11px] text-slate-500 truncate">{currentUser.email}</p>
-                    <div className="mt-2 flex items-center justify-between text-xs bg-slate-50 p-2 rounded-lg border border-slate-200/60">
-                      <span className="text-slate-600 font-medium">Verified XP:</span>
-                      <span className="font-extrabold text-indigo-600">
-                        {currentUser.xpPoints} XP
+                {/* User Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition border border-transparent hover:border-slate-200 text-left"
+                  >
+                    <img
+                      src={currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentUser.name)}`}
+                      alt={currentUser.name}
+                      className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-200"
+                    />
+                    <div className="hidden sm:flex flex-col">
+                      <span className="text-xs font-semibold text-slate-900 leading-tight">
+                        {currentUser.name}
+                      </span>
+                      <span className="text-[10px] text-slate-500 capitalize">
+                        {currentUser.role === 'club_lead'
+                          ? 'Club Lead'
+                          : currentUser.role === 'admin'
+                          ? 'College Admin'
+                          : 'Member'}
                       </span>
                     </div>
-                  </div>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
 
-                  <div className="px-2 py-1">
-                    <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Switch Demo Identity
-                    </p>
-                    {users.slice(0, 3).map(u => (
-                      <button
-                        key={u.id}
-                        onClick={() => {
-                          switchUser(u.id);
-                          setShowUserMenu(false);
-                        }}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-left transition ${
-                          u.id === currentUser.id
-                            ? 'bg-indigo-50 font-semibold text-indigo-700'
-                            : 'text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        <img
-                          src={u.avatar}
-                          alt={u.name}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                        <div className="flex-1 truncate">
-                          <p className="truncate">{u.name}</p>
-                          <p className="text-[10px] text-slate-400 capitalize">
-                            {u.role.replace('_', ' ')}
-                          </p>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-1 text-xs">
+                      <div className="px-4 py-2 border-b border-slate-100">
+                        <p className="font-semibold text-slate-900">{currentUser.name}</p>
+                        <p className="text-slate-500 font-mono text-[11px] truncate">
+                          {currentUser.registrationNumber}
+                        </p>
+                        <p className="text-slate-400 text-[11px] truncate">{currentUser.email}</p>
+                      </div>
+
+                      <div className="px-3 py-2 space-y-1 bg-slate-50/50">
+                        <div className="flex items-center justify-between text-[11px] text-slate-500">
+                          <span>Department:</span>
+                          <span className="font-medium text-slate-700">{currentUser.department || 'General'}</span>
                         </div>
-                      </button>
-                    ))}
-                  </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-500">
+                          <span>Activity Credits:</span>
+                          <span className="font-semibold text-slate-900">{currentUser.xpPoints || 0} XP</span>
+                        </div>
+                      </div>
 
-                  <div className="border-t border-slate-100 px-2 pt-1 mt-1">
-                    <Link
-                      href="/settings"
-                      onClick={() => setShowUserMenu(false)}
-                      className="block px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg"
-                    >
-                      Settings & Demo Config
-                    </Link>
-                  </div>
+                      <div className="border-t border-slate-100 px-2 pt-1 mt-1 space-y-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            setIsAvatarModalOpen(true);
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-50 rounded-lg text-left"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-slate-500" />
+                          <span>Change Avatar</span>
+                        </button>
+                        <Link
+                          href="/settings"
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-50 rounded-lg"
+                        >
+                          <Settings className="w-3.5 h-3.5 text-slate-500" />
+                          <span>Account Settings</span>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            logout();
+                            setShowUserMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded-lg text-left"
+                        >
+                          <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                          <span>Log Out Session</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
 
-            {/* Mobile Hamburger */}
+            {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+              className="md:hidden p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-slate-200 py-3 space-y-1">
-            <Link
-              href="/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/clubs"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Discover Clubs
-            </Link>
-            <Link
-              href="/tasks"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Task Board
-            </Link>
-            <Link
-              href="/my-tasks"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              My Tasks
-            </Link>
-            <Link
-              href="/recruitment"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Recruitment Pipeline
-            </Link>
-            <Link
-              href="/members"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Members Directory
-            </Link>
-            <Link
-              href="/workload"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Burnout Radar
-            </Link>
-            <Link
-              href="/contributions"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Contributions Ledger
-            </Link>
-            <Link
-              href="/analytics"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Analytics & Reports
-            </Link>
-            <Link
-              href="/feedback"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Pulse Feedback
-            </Link>
-            <Link
-              href="/demo-select"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-bold text-indigo-600 bg-indigo-50"
-            >
-              Role & Demo Switcher
-            </Link>
+            {isAuthenticated ? (
+              navLinks.map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  {item.label}
+                </Link>
+              ))
+            ) : (
+              <div className="p-2 space-y-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-center py-2 px-3 rounded-lg bg-slate-900 text-white text-xs font-medium"
+                >
+                  Sign In with Registration No.
+                </Link>
+                <Link
+                  href="/login?tab=register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-center py-2 px-3 rounded-lg border border-slate-200 text-slate-700 text-xs font-medium"
+                >
+                  Register Account
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Profile Picture Change Modal */}
+      <ProfilePictureModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+      />
     </header>
   );
 }
