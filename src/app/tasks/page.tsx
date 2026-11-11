@@ -46,41 +46,41 @@ const COLUMNS: ColumnConfig[] = [
   {
     id: 'todo',
     label: 'To Do',
-    color: 'text-slate-800',
-    badgeBg: 'bg-slate-100 text-slate-800 border-slate-200',
-    dotColor: 'bg-slate-400',
+    color: 'text-slate-800 dark:text-slate-200',
+    badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700',
+    dotColor: 'bg-slate-400 dark:bg-slate-500',
     description: 'Backlog items and tasks ready to be claimed or assigned',
   },
   {
     id: 'in_progress',
     label: 'In Progress',
-    color: 'text-blue-900',
-    badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
-    dotColor: 'bg-blue-600',
+    color: 'text-blue-900 dark:text-blue-300',
+    badgeBg: 'bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-900/50',
+    dotColor: 'bg-blue-600 dark:bg-blue-400',
     description: 'Active deliverables currently being worked on by members',
   },
   {
     id: 'under_review',
     label: 'Under Review',
-    color: 'text-amber-900',
-    badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-    dotColor: 'bg-amber-500',
+    color: 'text-amber-900 dark:text-amber-300',
+    badgeBg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-900/50',
+    dotColor: 'bg-amber-500 dark:bg-amber-400',
     description: 'Deliverables submitted by assignees awaiting lead verification & XP approval',
   },
   {
     id: 'completed',
     label: 'Completed',
-    color: 'text-emerald-900',
-    badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    dotColor: 'bg-emerald-600',
+    color: 'text-emerald-900 dark:text-emerald-300',
+    badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/50',
+    dotColor: 'bg-emerald-600 dark:bg-emerald-400',
     description: 'Verified deliverables with officially awarded student activity credits',
   },
   {
     id: 'blocked',
     label: 'Blocked',
-    color: 'text-rose-900',
-    badgeBg: 'bg-rose-50 text-rose-800 border-rose-200',
-    dotColor: 'bg-rose-500',
+    color: 'text-rose-900 dark:text-rose-300',
+    badgeBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900/50',
+    dotColor: 'bg-rose-500 dark:bg-rose-400',
     description: 'Tasks paused or stalled due to dependencies or administrative bottlenecks',
   },
 ];
@@ -143,25 +143,25 @@ export default function TasksKanbanPage() {
   if (isStudent && myJoinedClubs.length === 0) {
     return (
       <AppShell>
-        <div className="max-w-xl mx-auto my-12 bg-white rounded-xl p-8 border border-slate-200/90 shadow-xs text-center space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center mx-auto">
+        <div className="max-w-xl mx-auto my-12 bg-white dark:bg-slate-900 rounded-xl p-8 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center mx-auto">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
               No Active Club Memberships
             </span>
-            <h2 className="text-xl font-bold text-slate-900 mt-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-2">
               Join a Club to Access Task Boards
             </h2>
-            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
               Task boards contain internal club deliverables, sprint milestones, and contribution trackers. Explore active campus clubs, submit an application, and once approved you will be able to claim tasks and earn verified activity credits.
             </p>
           </div>
           <div className="pt-2">
             <Link
               href="/clubs"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold shadow-xs transition"
             >
               <span>Explore Clubs & Apply</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -209,7 +209,6 @@ export default function TasksKanbanPage() {
       setTaskError(res.error || 'Verification failed');
       setTimeout(() => setTaskError(null), 4000);
     } else {
-      // Update active modal task if opened
       if (activeTaskDetail?.id === taskId) {
         const updated = tasks.find(t => t.id === taskId);
         if (updated) {
@@ -277,26 +276,26 @@ export default function TasksKanbanPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Module 2 • Task Management & Workload
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
               Interactive Club Task Board
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
               Horizontal status swimlanes with card slider navigation, deliverable verification, and activity credits.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             {/* View Switcher */}
-            <div className="flex items-center bg-slate-200/80 p-1 rounded-xl text-xs">
+            <div className="flex items-center bg-slate-200/80 dark:bg-slate-800 p-1 rounded-xl text-xs">
               <button
                 onClick={() => setViewMode('horizontal')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
                   viewMode === 'horizontal'
-                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <Kanban className="w-3.5 h-3.5" />
@@ -306,8 +305,8 @@ export default function TasksKanbanPage() {
                 onClick={() => setViewMode('list')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
                   viewMode === 'list'
-                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -319,7 +318,7 @@ export default function TasksKanbanPage() {
             {(isLead || isAdmin) && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
+                className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Task</span>
@@ -330,14 +329,14 @@ export default function TasksKanbanPage() {
 
         {/* Task Error Banner */}
         {taskError && (
-          <div className="p-4 rounded-lg bg-rose-50 border border-rose-300 text-rose-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          <div className="p-4 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-900 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
             <span>{taskError}</span>
           </div>
         )}
 
         {/* Toolbar & Filters */}
-        <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-xs space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             {/* Search */}
             <div className="relative">
@@ -347,7 +346,7 @@ export default function TasksKanbanPage() {
                 placeholder="Search tasks, tags, assignees..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
               />
             </div>
 
@@ -355,7 +354,7 @@ export default function TasksKanbanPage() {
             <select
               value={selectedClubId}
               onChange={e => setSelectedClubId(e.target.value)}
-              className="p-2 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50 font-medium"
+              className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white font-medium"
             >
               <option value="all">
                 {isStudent ? 'All My Clubs' : 'All Clubs'}
@@ -371,7 +370,7 @@ export default function TasksKanbanPage() {
             <select
               value={selectedPriority}
               onChange={e => setSelectedPriority(e.target.value)}
-              className="p-2 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50 font-medium"
+              className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white font-medium"
             >
               <option value="all">All Priorities</option>
               <option value="urgent">Urgent</option>
@@ -384,7 +383,7 @@ export default function TasksKanbanPage() {
             <select
               value={selectedAssignee}
               onChange={e => setSelectedAssignee(e.target.value)}
-              className="p-2 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50 font-medium"
+              className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white font-medium"
             >
               <option value="all">All Assignees</option>
               {users.map(u => (
@@ -429,10 +428,10 @@ export default function TasksKanbanPage() {
             VIEW 2: TABLE / LIST VIEW
         ==================================================================== */}
         {viewMode === 'list' && (
-          <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Task</th>
                     <th className="py-3 px-4">Club</th>
@@ -444,32 +443,32 @@ export default function TasksKanbanPage() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredTasks.map(t => {
                     const isOverdue = t.status !== 'completed' && t.dueDate < today;
                     return (
-                      <tr key={t.id} className="hover:bg-slate-50/80 transition">
+                      <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
                         <td className="py-3 px-4">
                           <button
                             onClick={() => setActiveTaskDetail(t)}
-                            className="font-bold text-slate-900 hover:text-blue-600 text-left block"
+                            className="font-bold text-slate-900 dark:text-white hover:text-slate-600 dark:hover:text-slate-300 text-left block"
                           >
                             {t.title}
                           </button>
                         </td>
-                        <td className="py-3 px-4 text-slate-600">{t.clubName}</td>
+                        <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{t.clubName}</td>
                         <td className="py-3 px-4">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               t.status === 'completed'
-                                ? 'bg-emerald-100 text-emerald-800'
+                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                                 : t.status === 'under_review'
-                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
                                 : t.status === 'in_progress'
-                                ? 'bg-blue-100 text-blue-900 font-semibold'
+                                ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 font-semibold'
                                 : t.status === 'blocked'
-                                ? 'bg-rose-100 text-rose-800'
-                                : 'bg-slate-100 text-slate-800'
+                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300'
                             }`}
                           >
                             {t.status.replace('_', ' ')}
@@ -479,10 +478,10 @@ export default function TasksKanbanPage() {
                           <span
                             className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
                               t.priority === 'urgent'
-                                ? 'bg-slate-900 text-white shadow-xs'
+                                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs'
                                 : t.priority === 'high'
-                                ? 'bg-slate-200 text-slate-900 font-bold border border-slate-300'
-                                : 'bg-slate-100 text-slate-700'
+                                ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-600'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             {t.priority}
@@ -495,19 +494,19 @@ export default function TasksKanbanPage() {
                               alt={t.assigneeName}
                               className="w-5 h-5 rounded-full object-cover"
                             />
-                            <span className="font-semibold text-slate-800">{t.assigneeName}</span>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">{t.assigneeName}</span>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={isOverdue ? 'text-rose-600 font-bold' : 'text-slate-600'}>
+                          <span className={isOverdue ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-600 dark:text-slate-400'}>
                             {t.dueDate}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-bold text-slate-900">+{t.xpReward} XP</td>
+                        <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">+{t.xpReward} XP</td>
                         <td className="py-3 px-4 text-right">
                           <button
                             onClick={() => setActiveTaskDetail(t)}
-                            className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition"
+                            className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition"
                           >
                             Details
                           </button>
@@ -518,7 +517,7 @@ export default function TasksKanbanPage() {
                 </tbody>
               </table>
               {filteredTasks.length === 0 && (
-                <div className="p-8 text-center text-xs text-slate-500">
+                <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
                   No tasks matching selected filter criteria.
                 </div>
               )}
@@ -530,23 +529,23 @@ export default function TasksKanbanPage() {
             CREATE TASK MODAL (Leads & Admins)
         ==================================================================== */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200/90 space-y-4 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200/90 dark:border-slate-800 space-y-4 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold">
                     <Plus className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-base text-slate-900">Create Club Task</h3>
-                    <p className="text-[11px] text-slate-500">
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white">Create Club Task</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       Delegate workload and set XP bounty for verification
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -554,7 +553,7 @@ export default function TasksKanbanPage() {
 
               <form onSubmit={handleCreateTask} className="space-y-3.5 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Task Title *
                   </label>
                   <input
@@ -563,12 +562,12 @@ export default function TasksKanbanPage() {
                     placeholder="e.g. Design Event Banner for Techfest 2026"
                     value={newTitle}
                     onChange={e => setNewTitle(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Description & Specifications *
                   </label>
                   <textarea
@@ -577,17 +576,17 @@ export default function TasksKanbanPage() {
                     placeholder="Provide clear deliverables, links, requirements, and completion criteria..."
                     value={newDescription}
                     onChange={e => setNewDescription(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Club *</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Club *</label>
                     <select
                       value={newClubId}
                       onChange={e => setNewClubId(e.target.value)}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                      className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                     >
                       {visibleClubOptions.map(c => (
                         <option key={c.id} value={c.id}>
@@ -598,11 +597,11 @@ export default function TasksKanbanPage() {
                   </div>
 
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Assignee *</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Assignee *</label>
                     <select
                       value={newAssigneeId}
                       onChange={e => setNewAssigneeId(e.target.value)}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                      className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                     >
                       {users.map(u => (
                         <option key={u.id} value={u.id}>
@@ -615,11 +614,11 @@ export default function TasksKanbanPage() {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Priority</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Priority</label>
                     <select
                       value={newPriority}
                       onChange={e => setNewPriority(e.target.value as TaskPriority)}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                      className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                     >
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
@@ -629,18 +628,17 @@ export default function TasksKanbanPage() {
                   </div>
 
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">Due Date</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Due Date</label>
                     <input
                       type="date"
                       value={newDueDate}
                       onChange={e => setNewDueDate(e.target.value)}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
-                    >
-                    </input>
+                      className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
+                    />
                   </div>
 
                   <div>
-                    <label className="font-semibold text-slate-700 block mb-1">XP Reward</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">XP Reward</label>
                     <input
                       type="number"
                       min={10}
@@ -648,13 +646,13 @@ export default function TasksKanbanPage() {
                       step={10}
                       value={newXpReward}
                       onChange={e => setNewXpReward(Number(e.target.value))}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                      className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Tags (Comma-separated)
                   </label>
                   <input
@@ -662,21 +660,21 @@ export default function TasksKanbanPage() {
                     placeholder="e.g. Frontend, Documentation, Workshop"
                     value={newTags}
                     onChange={e => setNewTags(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium"
+                    className="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition"
                   >
                     Create & Assign Task
                   </button>
@@ -690,38 +688,38 @@ export default function TasksKanbanPage() {
             SUBMIT DELIVERABLE MODAL (Assignee)
         ==================================================================== */}
         {showSubmitModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200/90 space-y-4 animate-in zoom-in-95">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200/90 dark:border-slate-800 space-y-4 animate-in zoom-in-95">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold">
                     <Send className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-base text-slate-900">
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white">
                       Submit Deliverable
                     </h3>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       Send your completed work for lead verification (+{showSubmitModal.xpReward} XP)
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowSubmitModal(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
-                <p className="font-semibold text-slate-900">{showSubmitModal.title}</p>
-                <p className="text-slate-500 text-[11px] line-clamp-2">{showSubmitModal.description}</p>
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                <p className="font-semibold text-slate-900 dark:text-white">{showSubmitModal.title}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px] line-clamp-2">{showSubmitModal.description}</p>
               </div>
 
               <form onSubmit={handleSubmitTask} className="space-y-3.5 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Proof-of-Work Link (GitHub PR, Figma, Drive, or Doc URL)
                   </label>
                   <input
@@ -729,12 +727,12 @@ export default function TasksKanbanPage() {
                     placeholder="https://github.com/... or https://figma.com/..."
                     value={submissionLink}
                     onChange={e => setSubmissionLink(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Submission Notes & Summary of Work
                   </label>
                   <textarea
@@ -743,21 +741,21 @@ export default function TasksKanbanPage() {
                     placeholder="Briefly describe what you built, tested, and accomplished..."
                     value={submissionNote}
                     onChange={e => setSubmissionNote(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={() => setShowSubmitModal(null)}
-                    className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium"
+                    className="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition"
                   >
                     Submit for Lead Verification
                   </button>
@@ -771,26 +769,26 @@ export default function TasksKanbanPage() {
             TASK DETAILS & LEAD WORKFLOW DRAWER / MODAL
         ==================================================================== */}
         {activeTaskDetail && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
               {/* Header */}
-              <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-start justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="space-y-1.5 flex-1 pr-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded border border-slate-200">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
                       {activeTaskDetail.clubName}
                     </span>
                     <span
                       className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                         activeTaskDetail.status === 'completed'
-                          ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                          ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
                           : activeTaskDetail.status === 'under_review'
-                          ? 'bg-amber-100 text-amber-800 border-amber-300'
+                          ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800'
                           : activeTaskDetail.status === 'in_progress'
-                          ? 'bg-blue-100 text-blue-900 border-blue-200 font-semibold'
+                          ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border-blue-200 dark:border-blue-900/50 font-semibold'
                           : activeTaskDetail.status === 'blocked'
-                          ? 'bg-rose-100 text-rose-800 border-rose-300'
-                          : 'bg-slate-100 text-slate-800 border-slate-200'
+                          ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                       }`}
                     >
                       {activeTaskDetail.status.replace('_', ' ')}
@@ -798,25 +796,25 @@ export default function TasksKanbanPage() {
                     <span
                       className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                         activeTaskDetail.priority === 'urgent'
-                          ? 'bg-slate-900 text-white'
+                          ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
                           : activeTaskDetail.priority === 'high'
-                          ? 'bg-slate-200 text-slate-900 font-bold border border-slate-300'
-                          : 'bg-slate-100 text-slate-700'
+                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-600'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {activeTaskDetail.priority}
                     </span>
-                    <span className="text-[11px] font-extrabold text-slate-900 ml-auto">
+                    <span className="text-[11px] font-extrabold text-slate-900 dark:text-white ml-auto">
                       +{activeTaskDetail.xpReward} XP Reward
                     </span>
                   </div>
-                  <h3 className="font-extrabold text-lg text-slate-900 leading-snug">
+                  <h3 className="font-extrabold text-lg text-slate-900 dark:text-white leading-snug">
                     {activeTaskDetail.title}
                   </h3>
                 </div>
                 <button
                   onClick={() => setActiveTaskDetail(null)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -826,39 +824,39 @@ export default function TasksKanbanPage() {
               <div className="space-y-4 text-xs">
                 {/* Description */}
                 <div>
-                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider block">
                     Description & Specifications
                   </span>
-                  <div className="mt-1 text-slate-700 leading-relaxed bg-slate-50/80 p-3.5 rounded-xl border border-slate-200 whitespace-pre-wrap">
+                  <div className="mt-1 text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50/80 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 whitespace-pre-wrap">
                     {activeTaskDetail.description}
                   </div>
                 </div>
 
                 {/* Metadata Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
                   <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Assignee</span>
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold block">Assignee</span>
                     <div className="flex items-center gap-2 mt-1">
                       <img
                         src={getAvatarUrl(activeTaskDetail.assigneeAvatar, activeTaskDetail.assigneeName)}
                         alt={activeTaskDetail.assigneeName}
-                        className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-200"
+                        className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
                       />
-                      <span className="font-bold text-slate-800 truncate">{activeTaskDetail.assigneeName}</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200 truncate">{activeTaskDetail.assigneeName}</span>
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Due Date</span>
-                    <p className="font-bold text-slate-800 mt-1 flex items-center gap-1">
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold block">Due Date</span>
+                    <p className="font-bold text-slate-800 dark:text-slate-200 mt-1 flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       {activeTaskDetail.dueDate}
                     </p>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Estimated Hours</span>
-                    <p className="font-bold text-slate-800 mt-1 flex items-center gap-1">
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold block">Estimated Hours</span>
+                    <p className="font-bold text-slate-800 dark:text-slate-200 mt-1 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-slate-400" />
                       {activeTaskDetail.estimatedHours || 6} hrs
                     </p>
@@ -868,11 +866,11 @@ export default function TasksKanbanPage() {
                 {/* Tags */}
                 {(activeTaskDetail.tags || []).length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold mr-1">Tags:</span>
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold mr-1">Tags:</span>
                     {(activeTaskDetail.tags || []).map(t => (
                       <span
                         key={t}
-                        className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200/80"
+                        className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium border border-slate-200/80 dark:border-slate-700"
                       >
                         #{t}
                       </span>
@@ -882,18 +880,18 @@ export default function TasksKanbanPage() {
 
                 {/* Submission Deliverables (if submitted) */}
                 {activeTaskDetail.submissionNote && (
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span className="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         Member Submission Deliverable
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-500">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
                         Awaiting Verification
                       </span>
                     </div>
 
-                    <p className="text-slate-700 italic bg-white p-2.5 rounded-lg border border-slate-200">
+                    <p className="text-slate-700 dark:text-slate-300 italic bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
                       "{activeTaskDetail.submissionNote}"
                     </p>
 
@@ -902,7 +900,7 @@ export default function TasksKanbanPage() {
                         href={activeTaskDetail.submissionLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-bold text-xs text-blue-600 hover:text-blue-800 hover:underline pt-1"
+                        className="inline-flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-white hover:underline pt-1"
                       >
                         <span>Inspect External Deliverable Link</span>
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -913,13 +911,13 @@ export default function TasksKanbanPage() {
 
                 {/* Lead Management Console: Change Status directly */}
                 {canManageTask(activeTaskDetail) && (
-                  <div className="p-4 rounded-xl bg-slate-100/70 border border-slate-200 space-y-2.5">
+                  <div className="p-4 rounded-xl bg-slate-100/70 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-slate-700" />
+                      <span className="font-bold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-slate-700 dark:text-white" />
                         Leadership Status Control
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-500">
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
                         Admin / Club Lead Privileges
                       </span>
                     </div>
@@ -932,8 +930,8 @@ export default function TasksKanbanPage() {
                         }}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           activeTaskDetail.status === 'todo'
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300'
+                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         To Do
@@ -947,7 +945,7 @@ export default function TasksKanbanPage() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           activeTaskDetail.status === 'in_progress'
                             ? 'bg-blue-600 text-white border-blue-600'
-                            : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         In Progress
@@ -961,7 +959,7 @@ export default function TasksKanbanPage() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           activeTaskDetail.status === 'under_review'
                             ? 'bg-amber-600 text-white border-amber-600'
-                            : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         Under Review
@@ -975,7 +973,7 @@ export default function TasksKanbanPage() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           activeTaskDetail.status === 'completed'
                             ? 'bg-emerald-600 text-white border-emerald-600'
-                            : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         Completed
@@ -989,7 +987,7 @@ export default function TasksKanbanPage() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           activeTaskDetail.status === 'blocked'
                             ? 'bg-rose-600 text-white border-rose-600'
-                            : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'
                         }`}
                       >
                         Blocked
@@ -1000,7 +998,7 @@ export default function TasksKanbanPage() {
 
                 {/* Activity & Audit Trail (Safe handling) */}
                 <div>
-                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block mb-2">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider block mb-2">
                     Activity & Audit Trail
                   </span>
                   <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
@@ -1008,18 +1006,18 @@ export default function TasksKanbanPage() {
                       (activeTaskDetail.activities || []).map(act => (
                         <div
                           key={act.id || Math.random().toString()}
-                          className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]"
+                          className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-[11px]"
                         >
-                          <div className="flex items-center justify-between text-slate-500">
-                            <span className="font-bold text-slate-800">{act.userName || 'Member'}</span>
+                          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{act.userName || 'Member'}</span>
                             <span className="text-[10px]">{act.timestamp || 'Recent'}</span>
                           </div>
-                          <p className="text-slate-700 mt-0.5">{act.action}</p>
-                          {act.note && <p className="text-slate-500 italic mt-0.5">"{act.note}"</p>}
+                          <p className="text-slate-700 dark:text-slate-300 mt-0.5">{act.action}</p>
+                          {act.note && <p className="text-slate-500 dark:text-slate-400 italic mt-0.5">"{act.note}"</p>}
                         </div>
                       ))
                     ) : (
-                      <div className="p-3 text-center text-slate-400 bg-slate-50 rounded-lg border border-slate-200/80 text-[11px]">
+                      <div className="p-3 text-center text-slate-400 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200/80 dark:border-slate-700 text-[11px]">
                         Initial task record created by club leadership. No additional audit events.
                       </div>
                     )}
@@ -1028,10 +1026,10 @@ export default function TasksKanbanPage() {
               </div>
 
               {/* Drawer Bottom Actions */}
-              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
                 <button
                   onClick={() => setActiveTaskDetail(null)}
-                  className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium"
+                  className="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium"
                 >
                   Close
                 </button>
@@ -1041,7 +1039,7 @@ export default function TasksKanbanPage() {
                   {activeTaskDetail.status === 'in_progress' && isTaskAssignedToUser(activeTaskDetail, currentUser) && (
                     <button
                       onClick={() => handleOpenSubmit(activeTaskDetail)}
-                      className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs"
+                      className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs"
                     >
                       Submit Deliverable
                     </button>
@@ -1050,7 +1048,7 @@ export default function TasksKanbanPage() {
                   {/* If under_review */}
                   {activeTaskDetail.status === 'under_review' && (
                     isTaskAssignedToUser(activeTaskDetail, currentUser) ? (
-                      <span className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-900 border border-slate-300 text-xs font-semibold">
+                      <span className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 text-xs font-semibold">
                         Your Submission • Awaiting Lead Verification
                       </span>
                     ) : canManageTask(activeTaskDetail) ? (
@@ -1060,7 +1058,7 @@ export default function TasksKanbanPage() {
                             await handleReviewTask(activeTaskDetail.id, 'request_changes', reviewFeedbackNote || 'Please refine deliverable');
                             setActiveTaskDetail(null);
                           }}
-                          className="px-3 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-medium border border-rose-200"
+                          className="px-3 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-medium border border-rose-200 dark:border-rose-900"
                         >
                           Request Changes
                         </button>
@@ -1069,13 +1067,13 @@ export default function TasksKanbanPage() {
                             await handleReviewTask(activeTaskDetail.id, 'approve', 'Approved deliverable');
                             setActiveTaskDetail(null);
                           }}
-                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
+                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs"
                         >
                           Approve & Verify (+{activeTaskDetail.xpReward} XP)
                         </button>
                       </>
                     ) : (
-                      <span className="text-xs text-slate-500 font-medium">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                         Under Lead Review
                       </span>
                     )
@@ -1134,20 +1132,20 @@ function HorizontalTaskSwimlane({
   };
 
   return (
-    <div className="bg-slate-50/80 rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs space-y-3">
+    <div className="bg-slate-50/80 dark:bg-slate-900/60 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-3">
       {/* Swimlane Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200/70">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200/70 dark:border-slate-800">
         <div className="flex items-center gap-3">
           <span className={`w-3 h-3 rounded-full ${column.dotColor}`} />
           <div className="flex items-center gap-2">
             <h2 className={`font-extrabold text-sm sm:text-base ${column.color}`}>
               {column.label}
             </h2>
-            <span className="text-[11px] font-extrabold bg-white px-2.5 py-0.5 rounded-full text-slate-700 shadow-2xs border border-slate-200">
+            <span className="text-[11px] font-extrabold bg-white dark:bg-slate-800 px-2.5 py-0.5 rounded-full text-slate-700 dark:text-slate-300 shadow-2xs border border-slate-200 dark:border-slate-700">
               {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
             </span>
           </div>
-          <span className="hidden md:inline-block text-xs text-slate-500 border-l border-slate-200 pl-3">
+          <span className="hidden md:inline-block text-xs text-slate-500 dark:text-slate-400 border-l border-slate-200 dark:border-slate-700 pl-3">
             {column.description}
           </span>
         </div>
@@ -1157,7 +1155,7 @@ function HorizontalTaskSwimlane({
           {isLeadOrAdmin && (
             <button
               onClick={onCreateInLane}
-              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs flex items-center gap-1 transition"
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold shadow-2xs flex items-center gap-1 transition"
               title="Add task"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -1165,17 +1163,17 @@ function HorizontalTaskSwimlane({
             </button>
           )}
 
-          <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-1 bg-white dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
             <button
               onClick={() => handleScroll('left')}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-600 active:scale-95 transition"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 active:scale-95 transition"
               title="Scroll left"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleScroll('right')}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-600 active:scale-95 transition"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 active:scale-95 transition"
               title="Scroll right"
             >
               <ChevronRight className="w-4 h-4" />
@@ -1187,7 +1185,7 @@ function HorizontalTaskSwimlane({
       {/* Horizontally Scrollable Cards Track */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-2 pt-1 px-0.5 scroll-smooth [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]"
+        className="flex gap-4 overflow-x-auto pb-2 pt-1 px-0.5 scroll-smooth [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent] dark:[scrollbar-color:#334155_transparent]"
       >
         {tasks.map(task => {
           const isOverdue = task.status !== 'completed' && task.dueDate < today;
@@ -1196,7 +1194,7 @@ function HorizontalTaskSwimlane({
           return (
             <div
               key={task.id}
-              className="w-[310px] sm:w-[340px] shrink-0 bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs hover:shadow-xs transition flex flex-col justify-between h-[235px] group"
+              className="w-[310px] sm:w-[340px] shrink-0 bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-xs transition flex flex-col justify-between h-[235px] group"
             >
               {/* Top Row: Priority, Overdue, XP */}
               <div className="flex items-center justify-between gap-1.5">
@@ -1204,12 +1202,12 @@ function HorizontalTaskSwimlane({
                   <span
                     className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                       task.priority === 'urgent'
-                        ? 'bg-slate-900 text-white shadow-2xs'
+                        ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xs'
                         : task.priority === 'high'
-                        ? 'bg-slate-200 text-slate-900 font-bold border border-slate-300'
+                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-600'
                         : task.priority === 'medium'
-                        ? 'bg-slate-100 text-slate-800'
-                        : 'bg-slate-100 text-slate-700'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     {task.priority}
@@ -1222,7 +1220,7 @@ function HorizontalTaskSwimlane({
                   )}
                 </div>
 
-                <span className="text-[11px] font-extrabold text-slate-900 shrink-0">
+                <span className="text-[11px] font-extrabold text-slate-900 dark:text-white shrink-0">
                   +{task.xpReward} XP
                 </span>
               </div>
@@ -1231,25 +1229,25 @@ function HorizontalTaskSwimlane({
               <div className="my-1.5">
                 <h3
                   onClick={() => onSelectTask(task)}
-                  className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 cursor-pointer line-clamp-2 leading-snug transition"
+                  className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-slate-600 dark:group-hover:text-slate-300 cursor-pointer line-clamp-2 leading-snug transition"
                   title={task.title}
                 >
                   {task.title}
                 </h3>
                 <p
-                  className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed"
+                  className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 leading-relaxed"
                   title={task.description}
                 >
                   {task.description}
                 </p>
                 <div className="flex items-center gap-1.5 mt-1.5 overflow-hidden">
-                  <span className="text-[10px] font-semibold text-slate-500 truncate max-w-[140px]">
+                  <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
                     {task.clubName}
                   </span>
                   {(task.tags || []).slice(0, 2).map(tag => (
                     <span
                       key={tag}
-                      className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium truncate"
+                      className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium truncate"
                     >
                       #{tag}
                     </span>
@@ -1258,30 +1256,30 @@ function HorizontalTaskSwimlane({
               </div>
 
               {/* Assignee & Due Date Row */}
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-1.5 min-w-0" title={`Assigned to ${task.assigneeName}`}>
                   <img
                     src={getAvatarUrl(task.assigneeAvatar, task.assigneeName)}
                     alt={task.assigneeName}
-                    className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-200 shrink-0"
+                    className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700 shrink-0"
                   />
-                  <span className="font-semibold text-slate-700 truncate max-w-[100px]">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[100px]">
                     {task.assigneeName}
                   </span>
                 </div>
 
-                <span className={`text-[10px] flex items-center gap-1 shrink-0 ${isOverdue ? 'text-rose-600 font-bold' : 'text-slate-400'}`}>
+                <span className={`text-[10px] flex items-center gap-1 shrink-0 ${isOverdue ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-400 dark:text-slate-500'}`}>
                   <Calendar className="w-2.5 h-2.5" />
                   {task.dueDate}
                 </span>
               </div>
 
               {/* Action Buttons Bar */}
-              <div className="pt-2 border-t border-slate-100/70 flex items-center justify-between gap-1 text-[11px]">
+              <div className="pt-2 border-t border-slate-100/70 dark:border-slate-800 flex items-center justify-between gap-1 text-[11px]">
                 <button
                   type="button"
                   onClick={() => onSelectTask(task)}
-                  className="text-slate-600 hover:text-slate-900 font-semibold px-2 py-0.5 rounded hover:bg-slate-100 transition"
+                  className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold px-2 py-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Details
                 </button>
@@ -1291,7 +1289,7 @@ function HorizontalTaskSwimlane({
                   <button
                     type="button"
                     onClick={() => onUpdateStatus(task.id, 'in_progress')}
-                    className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold transition"
+                    className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold transition"
                   >
                     Start →
                   </button>
@@ -1301,7 +1299,7 @@ function HorizontalTaskSwimlane({
                   <button
                     type="button"
                     onClick={() => onOpenSubmit(task)}
-                    className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-2xs transition"
+                    className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold shadow-2xs transition"
                   >
                     Submit →
                   </button>
@@ -1309,26 +1307,26 @@ function HorizontalTaskSwimlane({
 
                 {task.status === 'under_review' && (
                   isMyTask ? (
-                    <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                    <span className="text-[10px] font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-900/50">
                       Under Review
                     </span>
                   ) : canManageTask(task) ? (
                     <button
                       type="button"
                       onClick={() => onReviewTask(task.id, 'approve', 'Approved from Kanban Board')}
-                      className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-2xs transition"
+                      className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold shadow-2xs transition"
                     >
                       Approve ✓
                     </button>
                   ) : (
-                    <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                       Under Review
                     </span>
                   )
                 )}
 
                 {task.status === 'completed' && (
-                  <span className="text-emerald-700 font-bold text-[10px] flex items-center gap-1">
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold text-[10px] flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Verified
                   </span>
                 )}
@@ -1338,12 +1336,12 @@ function HorizontalTaskSwimlane({
                     <button
                       type="button"
                       onClick={() => onUpdateStatus(task.id, 'in_progress')}
-                      className="px-2 py-0.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] font-semibold border border-rose-200 transition"
+                      className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-[10px] font-semibold border border-rose-200 dark:border-rose-900 transition"
                     >
                       Unblock →
                     </button>
                   ) : (
-                    <span className="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                    <span className="text-[10px] font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900">
                       Blocked
                     </span>
                   )
@@ -1354,12 +1352,12 @@ function HorizontalTaskSwimlane({
         })}
 
         {tasks.length === 0 && (
-          <div className="w-full py-8 px-6 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl text-center space-y-1 bg-white/60">
-            <CheckSquare className="w-6 h-6 text-slate-300" />
-            <p className="text-xs font-semibold text-slate-600">
+          <div className="w-full py-8 px-6 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center space-y-1 bg-white/60 dark:bg-slate-900/40">
+            <CheckSquare className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
               No tasks currently in {column.label}
             </p>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
               {column.description}
             </p>
           </div>

@@ -85,7 +85,7 @@ export default function DashboardPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
           <div className="flex items-center gap-4">
             <div
               className="relative group cursor-pointer shrink-0"
@@ -95,7 +95,7 @@ export default function DashboardPage() {
               <img
                 src={getAvatarUrl(currentUser.avatar, currentUser.name)}
                 alt={currentUser.name}
-                className="w-14 h-14 rounded-xl object-cover ring-1 ring-slate-200 group-hover:opacity-85 transition"
+                className="w-14 h-14 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700 group-hover:opacity-85 transition"
               />
               <button
                 type="button"
@@ -103,7 +103,7 @@ export default function DashboardPage() {
                   e.stopPropagation();
                   setIsAvatarModalOpen(true);
                 }}
-                className="absolute -bottom-1 -right-1 p-1 rounded-md bg-slate-900 hover:bg-slate-800 text-white ring-2 ring-white shadow-xs transition"
+                className="absolute -bottom-1 -right-1 p-1 rounded-md bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 ring-2 ring-white dark:ring-slate-900 shadow-xs transition"
                 title="Change photo"
               >
                 <Camera className="w-3 h-3" />
@@ -111,10 +111,10 @@ export default function DashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                   Welcome back, {currentUser.name.split(' ')[0]}
                 </h1>
-                <span className="px-2 py-0.5 rounded-md text-[11px] font-medium uppercase tracking-wide bg-slate-100 text-slate-700 border border-slate-200/80">
+                <span className="px-2 py-0.5 rounded-md text-[11px] font-medium uppercase tracking-wide bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700">
                   {currentUser.role === 'club_lead'
                     ? 'Club Lead'
                     : currentUser.role === 'admin'
@@ -122,8 +122,8 @@ export default function DashboardPage() {
                     : 'Student Member'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                <span className="font-mono text-slate-600 font-medium">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <span className="font-mono text-slate-600 dark:text-slate-300 font-medium">
                   {currentUser.registrationNumber || '2023BCSE014'}
                 </span>{' '}
                 • {currentUser.department} • {currentUser.year}
@@ -133,11 +133,11 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-3">
             {currentUser.role === 'student' && (
-              <div className="flex items-center gap-2.5 bg-slate-50 px-3.5 py-2 rounded-lg border border-slate-200/80">
-                <Award className="w-4 h-4 text-slate-600" />
+              <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-slate-800/60 px-3.5 py-2 rounded-lg border border-slate-200/80 dark:border-slate-700">
+                <Award className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Activity Credits</p>
-                  <p className="text-sm font-bold text-slate-900">{currentUser.xpPoints} XP</p>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500">Activity Credits</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">{currentUser.xpPoints} XP</p>
                 </div>
               </div>
             )}
@@ -145,7 +145,7 @@ export default function DashboardPage() {
             {currentUser.role === 'club_lead' && (
               <Link
                 href="/tasks"
-                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-medium transition shadow-xs flex items-center gap-1.5"
               >
                 <span>Manage Tasks</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ export default function DashboardPage() {
             {currentUser.role === 'admin' && (
               <Link
                 href="/reports"
-                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-medium transition shadow-xs flex items-center gap-1.5"
               >
                 <span>Governance Report</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -170,121 +170,121 @@ export default function DashboardPage() {
         {currentUser.role === 'club_lead' && (
           <div className="space-y-6">
             {/* Burnout Risk Assessment Card - Clean Executive Panel */}
-            <div className="rounded-xl p-5 sm:p-6 bg-white border border-slate-200/90 shadow-xs">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div className="rounded-xl p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center shrink-0">
-                    <Flame className="w-5 h-5 text-slate-700" />
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                    <Flame className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded">
                         Early Warning Alert
                       </span>
-                      <span className="text-xs font-semibold text-slate-700">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                         {gdscKpis.burnoutIndex}/100 Risk Score
                       </span>
                     </div>
-                    <h2 className="text-base font-bold text-slate-900 mt-1">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white mt-1">
                       Lead Task Concentration Alert for {myLeadClub.shortName}
                     </h2>
                   </div>
                 </div>
                 <Link
                   href="/workload"
-                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs self-start md:self-auto"
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-medium transition shadow-xs self-start md:self-auto"
                 >
                   Workload Rebalancer →
                 </Link>
               </div>
 
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Lead Task Allocation</p>
-                  <p className="text-lg font-bold text-slate-900 mt-0.5">65% of open tasks</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Campus recommended limit is &lt;35%</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Lead Task Allocation</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">65% of open tasks</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Campus recommended limit is &lt;35%</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Available Core Members</p>
-                  <p className="text-lg font-bold text-slate-900 mt-0.5">3 Available</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Active team members have open bandwidth</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Available Core Members</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">3 Available</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Active team members have open bandwidth</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Inactive Members Flagged</p>
-                  <p className="text-lg font-bold text-slate-900 mt-0.5">{ghostMembers.length} Members</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">0 tasks completed in past 30 days</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Inactive Members Flagged</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">{ghostMembers.length} Members</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">0 tasks completed in past 30 days</p>
                 </div>
               </div>
             </div>
 
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1.5">
                   <span className="text-[11px] font-medium uppercase tracking-wider">Total Members</span>
-                  <Users className="w-4 h-4 text-slate-400" />
+                  <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{myLeadClub.memberCount}</p>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{myLeadClub.memberCount}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   {gdscKpis.participationRate}% active participation
                 </p>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1.5">
                   <span className="text-[11px] font-medium uppercase tracking-wider">Task Completion</span>
-                  <CheckCircle2 className="w-4 h-4 text-slate-400" />
+                  <CheckCircle2 className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{gdscKpis.taskCompletionRate}%</p>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{gdscKpis.taskCompletionRate}%</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   {gdscKpis.completedTasks} completed / {gdscKpis.totalTasks} total
                 </p>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1.5">
                   <span className="text-[11px] font-medium uppercase tracking-wider">Pending Applicants</span>
-                  <Sparkles className="w-4 h-4 text-slate-400" />
+                  <Sparkles className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{pendingApplicants.length}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{pendingApplicants.length}</p>
                 <Link
                   href="/recruitment"
-                  className="text-[11px] text-slate-600 font-medium mt-1 inline-block hover:text-slate-900 hover:underline"
+                  className="text-[11px] text-slate-600 dark:text-slate-300 font-medium mt-1 inline-block hover:text-slate-900 dark:hover:text-white hover:underline"
                 >
                   Review pipeline →
                 </Link>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1.5">
                   <span className="text-[11px] font-medium uppercase tracking-wider">Satisfaction</span>
-                  <Award className="w-4 h-4 text-slate-400" />
+                  <Award className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{gdscKpis.averageSatisfaction} / 5.0</p>
-                <p className="text-[11px] text-slate-500 mt-1">Based on student feedback</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{gdscKpis.averageSatisfaction} / 5.0</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Based on student feedback</p>
               </div>
             </div>
 
             {/* Action Grids */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Task Submissions Awaiting Approval */}
-              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <h3 className="font-semibold text-slate-900 text-sm">
+                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                       Task Submissions Awaiting Approval
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Verify proof-of-work to grant activity credits
                     </p>
                   </div>
-                  <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200/80 dark:border-slate-700">
                     {tasksAwaitingReview.length} Pending
                   </span>
                 </div>
 
                 {tasksAwaitingReview.length === 0 ? (
-                  <div className="py-8 text-center text-xs text-slate-400">
+                  <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
                     All task submissions have been reviewed.
                   </div>
                 ) : (
@@ -292,21 +292,21 @@ export default function DashboardPage() {
                     {tasksAwaitingReview.map(t => (
                       <div
                         key={t.id}
-                        className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                        className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900 truncate">{t.title}</span>
-                            <span className="font-mono text-[11px] text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200 shrink-0">
+                            <span className="font-semibold text-slate-900 dark:text-white truncate">{t.title}</span>
+                            <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-850 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 shrink-0">
                               +{t.xpReward} XP
                             </span>
                           </div>
-                          <p className="text-slate-500 mt-0.5 truncate">
-                            By <strong className="text-slate-700">{t.assigneeName}</strong>
+                          <p className="text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                            By <strong className="text-slate-700 dark:text-slate-200">{t.assigneeName}</strong>
                           </p>
                           {t.submissionNote && (
                             <p
-                              className="text-slate-600 mt-1 bg-white p-2 rounded border border-slate-200/60 text-[11px] truncate break-all"
+                              className="text-slate-600 dark:text-slate-300 mt-1 bg-white dark:bg-slate-800 p-2 rounded border border-slate-200/60 dark:border-slate-700 text-[11px] truncate break-all"
                               title={t.submissionNote}
                             >
                               "{t.submissionNote}"
@@ -315,7 +315,7 @@ export default function DashboardPage() {
                         </div>
                         <button
                           onClick={() => reviewTask(t.id, 'approve', 'Approved from Lead Dashboard')}
-                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs shrink-0"
+                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium text-xs transition shadow-xs shrink-0"
                         >
                           Approve
                         </button>
@@ -326,26 +326,26 @@ export default function DashboardPage() {
               </div>
 
               {/* Applicant Review Quick Queue */}
-              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <h3 className="font-semibold text-slate-900 text-sm">
+                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                       Recruitment Pipeline Queue
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Applications submitted for {myLeadClub.shortName}
                     </p>
                   </div>
                   <Link
                     href="/recruitment"
-                    className="text-xs text-slate-600 hover:text-slate-900 font-medium"
+                    className="text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium"
                   >
                     View All →
                   </Link>
                 </div>
 
                 {pendingApplicants.length === 0 ? (
-                  <div className="py-8 text-center text-xs text-slate-400">
+                  <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
                     No pending applications.
                   </div>
                 ) : (
@@ -353,19 +353,19 @@ export default function DashboardPage() {
                     {pendingApplicants.slice(0, 2).map((app, idx) => (
                       <div
                         key={app.id || (app as any)._id || `applicant_${idx}`}
-                        className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                        className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
                         <div className="flex items-start gap-3 min-w-0 flex-1">
                           <img
                             src={getAvatarUrl(app.userAvatar, app.userName)}
                             alt={app.userName}
-                            className="w-9 h-9 rounded-lg object-cover ring-1 ring-slate-200 shrink-0"
+                            className="w-9 h-9 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700 shrink-0"
                           />
                           <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-slate-900 truncate">{app.userName}</p>
-                            <p className="text-slate-500 font-medium truncate">Role: {app.appliedRole}</p>
+                            <p className="font-semibold text-slate-900 dark:text-white truncate">{app.userName}</p>
+                            <p className="text-slate-500 dark:text-slate-400 font-medium truncate">Role: {app.appliedRole}</p>
                             <p
-                              className="text-slate-500 truncate break-all mt-0.5 text-[11px]"
+                              className="text-slate-500 dark:text-slate-400 truncate break-all mt-0.5 text-[11px]"
                               title={app.statementOfPurpose}
                             >
                               {app.statementOfPurpose}
@@ -376,13 +376,13 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-2 shrink-0">
                           <button
                             onClick={() => reviewApplication(app.id, 'approved', 'Welcome to the club!')}
-                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium text-xs transition shadow-xs"
                           >
                             Approve
                           </button>
                           <Link
                             href="/recruitment"
-                            className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium text-xs"
+                            className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-xs"
                           >
                             Details
                           </Link>
@@ -395,21 +395,21 @@ export default function DashboardPage() {
             </div>
 
             {/* Inactivity Radar Alert */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
-                  <ShieldAlert className="w-4 h-4 text-slate-500" />
+                  <ShieldAlert className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                   <div>
-                    <h3 className="font-semibold text-slate-900 text-sm">
+                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                       Ghost Member Detection ({ghostMembers.length} Flagged)
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Members who enrolled but have 0 verified contributions in 30 days
                     </p>
                   </div>
                 </div>
                 {nudgeSent && (
-                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-md animate-in fade-in">
+                  <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-md animate-in fade-in">
                     ✓ {nudgeSent}
                   </span>
                 )}
@@ -419,18 +419,18 @@ export default function DashboardPage() {
                 {ghostMembers.map(m => (
                   <div
                     key={m.userId}
-                    className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs"
+                    className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <img
                         src={getAvatarUrl(m.avatar, m.userName)}
                         alt={m.userName}
-                        className="w-8 h-8 rounded-lg object-cover grayscale shrink-0"
+                        className="w-8 h-8 rounded-lg object-cover grayscale shrink-0 ring-1 ring-slate-200 dark:ring-slate-700"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-slate-900 truncate">{m.userName}</p>
-                        <p className="text-slate-400 text-[11px] truncate">{m.userEmail}</p>
-                        <span className="inline-block mt-0.5 text-[10px] text-slate-500">
+                        <p className="font-semibold text-slate-900 dark:text-white truncate">{m.userName}</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-[11px] truncate">{m.userEmail}</p>
+                        <span className="inline-block mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
                           {m.participationRate}% participation
                         </span>
                       </div>
@@ -440,13 +440,13 @@ export default function DashboardPage() {
                       disabled={nudgedMemberIds.has(m.userId)}
                       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center gap-1.5 shrink-0 ${
                         nudgedMemberIds.has(m.userId)
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 cursor-default'
-                          : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-xs'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 cursor-default'
+                          : 'bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 shadow-xs'
                       }`}
                     >
                       {nudgedMemberIds.has(m.userId) ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span>Nudged ✓</span>
                         </>
                       ) : (
@@ -470,53 +470,53 @@ export default function DashboardPage() {
           <div className="space-y-6">
             {/* Quick summary cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Clubs Enrolled
                 </span>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{myClubs.length}</p>
-                <p className="text-[11px] text-slate-500 mt-0.5 truncate">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{myClubs.length}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                   {myClubs.map(c => c.shortName || c.name).join(', ') || 'No clubs joined'}
                 </p>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Active Tasks
                 </span>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{myPendingTasks.length}</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">Assigned to you</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{myPendingTasks.length}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Assigned to you</p>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Verified XP Earned
                 </span>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{currentUser.xpPoints} XP</p>
-                <p className="text-[11px] text-slate-500 mt-0.5">In personal ledger</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{currentUser.xpPoints} XP</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">In personal ledger</p>
               </div>
 
-              <div className="bg-white p-4 sm:p-5 rounded-xl border border-slate-200/90 shadow-xs">
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Latest Application
                 </span>
                 {myApplications.length > 0 ? (
                   <>
-                    <p className="text-base font-semibold text-slate-900 mt-1 truncate">
+                    <p className="text-base font-semibold text-slate-900 dark:text-white mt-1 truncate">
                       {myApplications[0].clubName}
                     </p>
-                    <span className="inline-block mt-1 text-[10px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60 uppercase">
+                    <span className="inline-block mt-1 text-[10px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200/60 dark:border-slate-700 uppercase">
                       {myApplications[0].status.replace('_', ' ')}
                     </span>
                   </>
                 ) : (
                   <>
-                    <p className="text-base font-semibold text-slate-900 mt-1 truncate">
+                    <p className="text-base font-semibold text-slate-900 dark:text-white mt-1 truncate">
                       None Pending
                     </p>
                     <Link
                       href="/clubs"
-                      className="inline-block mt-1 text-[11px] font-semibold text-blue-600 hover:underline"
+                      className="inline-block mt-1 text-[11px] font-semibold text-slate-900 dark:text-white hover:underline"
                     >
                       Browse Clubs →
                     </Link>
@@ -526,26 +526,26 @@ export default function DashboardPage() {
             </div>
 
             {/* My Active Tasks Queue */}
-            <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="font-semibold text-slate-900 text-sm">
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                     My Assigned Tasks
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Track and submit progress for club tasks
                   </p>
                 </div>
                 <Link
                   href="/my-tasks"
-                  className="text-xs font-medium text-slate-600 hover:text-slate-900"
+                  className="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 >
                   Full Task Board →
                 </Link>
               </div>
 
               {myPendingTasks.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400">
+                <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
                   You have completed all assigned tasks.
                 </div>
               ) : (
@@ -553,18 +553,18 @@ export default function DashboardPage() {
                   {myPendingTasks.map(t => (
                     <div
                       key={t.id}
-                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+                      className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-700 shrink-0">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 shrink-0">
                             {t.priority}
                           </span>
-                          <span className="font-semibold text-slate-900 truncate">{t.title}</span>
-                          <span className="font-mono text-slate-600 shrink-0">+{t.xpReward} XP</span>
+                          <span className="font-semibold text-slate-900 dark:text-white truncate">{t.title}</span>
+                          <span className="font-mono text-slate-600 dark:text-slate-300 shrink-0">+{t.xpReward} XP</span>
                         </div>
-                        <p className="text-slate-500 mt-0.5 truncate">{t.clubName}</p>
-                        <p className="text-slate-600 mt-1 leading-relaxed line-clamp-2 break-all" title={t.description}>
+                        <p className="text-slate-500 dark:text-slate-400 mt-0.5 truncate">{t.clubName}</p>
+                        <p className="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed line-clamp-2 break-all" title={t.description}>
                           {t.description}
                         </p>
                       </div>
@@ -573,7 +573,7 @@ export default function DashboardPage() {
                         {t.status === 'todo' && (
                           <button
                             onClick={() => updateTaskStatus(t.id, 'in_progress', 'Started working on task')}
-                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium text-xs transition shadow-xs"
                           >
                             Start Task
                           </button>
@@ -582,14 +582,14 @@ export default function DashboardPage() {
                         {t.status === 'in_progress' && (
                           <Link
                             href="/my-tasks"
-                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition shadow-xs"
+                            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-medium text-xs transition shadow-xs"
                           >
                             Submit for Review
                           </Link>
                         )}
 
                         {t.status === 'under_review' && (
-                          <span className="text-xs font-medium text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
                             Under Lead Review
                           </span>
                         )}
@@ -603,20 +603,20 @@ export default function DashboardPage() {
             {/* Application Status & Upcoming Events */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Application Tracking */}
-              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
-                <h3 className="font-semibold text-slate-900 text-sm mb-0.5">
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-0.5">
                   My Recruitment Applications
                 </h3>
-                <p className="text-xs text-slate-500 mb-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                   Status of club memberships you applied for
                 </p>
 
                 {myApplications.length === 0 ? (
-                  <div className="py-8 text-center text-xs text-slate-400 space-y-2">
+                  <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500 space-y-2">
                     <p>You haven't submitted any club applications yet.</p>
                     <Link
                       href="/clubs"
-                      className="inline-flex items-center gap-1 text-slate-900 font-semibold hover:underline"
+                      className="inline-flex items-center gap-1 text-slate-900 dark:text-white font-semibold hover:underline"
                     >
                       <span>Explore & Apply to Campus Clubs</span>
                       <ArrowRight className="w-3 h-3" />
@@ -626,23 +626,23 @@ export default function DashboardPage() {
                   myApplications.map((app, idx) => (
                     <div
                       key={app.id || (app as any)._id || `my_app_${idx}`}
-                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2 text-xs min-w-0"
+                      className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-2 text-xs min-w-0"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-slate-900 truncate">{app.clubName}</span>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded shrink-0">
+                        <span className="font-semibold text-slate-900 dark:text-white truncate">{app.clubName}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded shrink-0">
                           {app.status.replace('_', ' ')}
                         </span>
                       </div>
-                      <p className="text-slate-600 truncate">
-                        Applied Role: <strong className="text-slate-800">{app.appliedRole}</strong>
+                      <p className="text-slate-600 dark:text-slate-300 truncate">
+                        Applied Role: <strong className="text-slate-800 dark:text-slate-100">{app.appliedRole}</strong>
                       </p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500">
                         Applied Date: {app.appliedDate}
                       </p>
                       {app.notes && (
                         <p
-                          className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-[11px] line-clamp-2 break-all"
+                          className="text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 text-[11px] line-clamp-2 break-all"
                           title={app.notes}
                         >
                           Note: {app.notes}
@@ -654,41 +654,41 @@ export default function DashboardPage() {
               </div>
 
               {/* Upcoming Events */}
-              <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
-                <h3 className="font-semibold text-slate-900 text-sm mb-0.5">
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-0.5">
                   Upcoming Events in Your Clubs
                 </h3>
-                <p className="text-xs text-slate-500 mb-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
                   Confirmed campus sessions and workshops
                 </p>
 
                 <div className="space-y-3">
-                  <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs">
+                  <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-xs">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-slate-900">GDSC Workshop</span>
-                      <span className="text-slate-500 flex items-center gap-1 text-[11px]">
-                        <Calendar className="w-3 h-3 text-slate-400" /> Nov 04, 2026
+                      <span className="font-semibold text-slate-900 dark:text-white">GDSC Workshop</span>
+                      <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 text-[11px]">
+                        <Calendar className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Nov 04, 2026
                       </span>
                     </div>
-                    <p className="text-slate-700 font-medium">
+                    <p className="text-slate-700 dark:text-slate-200 font-medium">
                       Android & Jetpack Compose Hands-on
                     </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       Audi 2 & YouTube Live
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs">
+                  <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-xs">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-slate-900">RoboCrafters Sprint</span>
-                      <span className="text-slate-500 flex items-center gap-1 text-[11px]">
-                        <Calendar className="w-3 h-3 text-slate-400" /> Nov 14, 2026
+                      <span className="font-semibold text-slate-900 dark:text-white">RoboCrafters Sprint</span>
+                      <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 text-[11px]">
+                        <Calendar className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Nov 14, 2026
                       </span>
                     </div>
-                    <p className="text-slate-700 font-medium">
+                    <p className="text-slate-700 dark:text-slate-200 font-medium">
                       LiDAR & SLAM Navigation Testing
                     </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       Robotics Bay Lab 102
                     </p>
                   </div>
@@ -703,51 +703,51 @@ export default function DashboardPage() {
         ========================================================================= */}
         {currentUser.role === 'admin' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-xs">
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Dean of Student Affairs Governance Console
               </span>
-              <h2 className="text-xl font-bold text-slate-900 mt-1 tracking-tight">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1 tracking-tight">
                 Campus Organization Health & Governance Index
               </h2>
-              <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                 Overseeing 5 registered student societies representing 150+ students. Monitoring lead burnout risk, verified activity credits, and council compliance.
               </p>
 
               <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Registered Clubs</p>
-                  <p className="text-xl font-bold text-slate-900 mt-0.5">5 Active</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Registered Clubs</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">5 Active</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Avg Campus Burnout</p>
-                  <p className="text-xl font-bold text-slate-900 mt-0.5">52 / 100</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Avg Campus Burnout</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">52 / 100</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Verified Credits</p>
-                  <p className="text-xl font-bold text-slate-900 mt-0.5">3,450 XP</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Verified Credits</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">3,450 XP</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80">
-                  <p className="text-slate-500 font-medium">Council Compliance</p>
-                  <p className="text-xl font-bold text-slate-900 mt-0.5">98.4%</p>
+                <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3.5 border border-slate-200/80 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Council Compliance</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">98.4%</p>
                 </div>
               </div>
             </div>
 
             {/* University Clubs Governance Table */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="font-semibold text-slate-900 text-sm">
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                     Registered Student Organizations Audit
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Comparative health score and lead burnout risk
                   </p>
                 </div>
                 <Link
                   href="/reports"
-                  className="text-xs font-medium text-slate-600 hover:text-slate-900"
+                  className="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 >
                   Print Report →
                 </Link>
@@ -755,7 +755,7 @@ export default function DashboardPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200/80">
+                  <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase font-semibold border-b border-slate-200/80 dark:border-slate-700">
                     <tr>
                       <th className="py-2.5 px-3">Club</th>
                       <th className="py-2.5 px-3">Category</th>
@@ -766,41 +766,41 @@ export default function DashboardPage() {
                       <th className="py-2.5 px-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {clubs.map(c => (
-                      <tr key={c.id} className="hover:bg-slate-50/60 transition">
-                        <td className="py-3 px-3 font-semibold text-slate-900">
+                      <tr key={c.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                        <td className="py-3 px-3 font-semibold text-slate-900 dark:text-white">
                           {c.name}
                         </td>
-                        <td className="py-3 px-3 text-slate-600">
+                        <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
                           {c.category}
                         </td>
-                        <td className="py-3 px-3 text-slate-600">
+                        <td className="py-3 px-3 text-slate-600 dark:text-slate-300">
                           {c.leadName}
                         </td>
-                        <td className="py-3 px-3 font-mono text-slate-700">
+                        <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
                           {c.memberCount}
                         </td>
                         <td className="py-3 px-3">
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
                               c.burnoutScore > 65
-                                ? 'bg-slate-900 text-white shadow-xs'
-                                : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                             }`}
                           >
                             {c.burnoutScore} / 100
                           </span>
                         </td>
                         <td className="py-3 px-3">
-                          <span className="font-semibold text-slate-800">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {c.healthScore}%
                           </span>
                         </td>
                         <td className="py-3 px-3 text-right">
                           <Link
                             href={`/clubs/${c.id}`}
-                            className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition"
+                            className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition"
                           >
                             Audit Details
                           </Link>

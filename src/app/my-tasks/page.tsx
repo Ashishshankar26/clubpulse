@@ -65,13 +65,13 @@ export default function MyTasksDashboardPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Module 2 • Personal Workload
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
               My Assigned Tasks & Submissions
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
               Deliver on commitments, track upcoming deadlines, and submit completed work for lead verification.
             </p>
           </div>
@@ -79,13 +79,13 @@ export default function MyTasksDashboardPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/tasks"
-              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition"
+              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition"
             >
               Task Board Swimlanes
             </Link>
             <Link
               href="/contributions"
-              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
             >
               <Award className="w-4 h-4" />
               <span>Verified Portfolio</span>
@@ -94,13 +94,13 @@ export default function MyTasksDashboardPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
           <button
             onClick={() => setActiveTab('pending')}
             className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-2 ${
               activeTab === 'pending'
-                ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs font-semibold'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             <Clock className="w-4 h-4" />
@@ -110,8 +110,8 @@ export default function MyTasksDashboardPage() {
             onClick={() => setActiveTab('completed')}
             className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-2 ${
               activeTab === 'completed'
-                ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs font-semibold'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -122,12 +122,12 @@ export default function MyTasksDashboardPage() {
         {/* Task Cards List */}
         <div className="space-y-4">
           {displayedTasks.length === 0 ? (
-            <div className="bg-white rounded-xl p-12 border border-slate-200/90 text-center space-y-3">
-              <CheckSquare className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="text-slate-700 font-bold text-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-xl p-12 border border-slate-200/90 dark:border-slate-800 text-center space-y-3">
+              <CheckSquare className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+              <p className="text-slate-700 dark:text-slate-300 font-bold text-sm">
                 {activeTab === 'pending' ? 'No pending tasks assigned to you!' : 'No completed tasks yet.'}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 dark:text-slate-500">
                 {activeTab === 'pending'
                   ? 'Explore the Task Board to pick up starter tasks or check in with your club lead.'
                   : 'Submit active tasks to have your contributions reviewed and verified.'}
@@ -139,21 +139,21 @@ export default function MyTasksDashboardPage() {
               return (
                 <div
                   key={task.id}
-                  className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xs transition space-y-4"
+                  className="bg-white dark:bg-slate-900 rounded-xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-xs transition space-y-4"
                 >
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="space-y-2 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
                           {task.clubName}
                         </span>
                         <span
                           className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                             task.priority === 'urgent'
-                              ? 'bg-slate-900 text-white shadow-xs'
+                              ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs'
                               : task.priority === 'high'
-                              ? 'bg-slate-200 text-slate-900 font-bold border border-slate-300'
-                              : 'bg-slate-100 text-slate-700'
+                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-600'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           {task.priority} Priority
@@ -161,12 +161,12 @@ export default function MyTasksDashboardPage() {
                         <span
                           className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                             task.status === 'completed'
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/50'
                               : task.status === 'under_review'
-                              ? 'bg-amber-50 text-amber-800 border-amber-200'
+                              ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-900/50'
                               : task.status === 'in_progress'
-                              ? 'bg-blue-50 text-blue-900 border-blue-200'
-                              : 'bg-slate-100 text-slate-800 border-slate-200'
+                              ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border-blue-200 dark:border-blue-900/50'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                           }`}
                         >
                           {task.status.replace('_', ' ')}
@@ -180,24 +180,24 @@ export default function MyTasksDashboardPage() {
 
                       <h3
                         onClick={() => setActiveDetailTask(task)}
-                        className="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer transition"
+                        className="text-base font-bold text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer transition"
                       >
                         {task.title}
                       </h3>
 
-                      <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
                         {task.description}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 pt-1">
                         <span className="flex items-center gap-1 font-medium">
                           <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                          Due: <strong className={isOverdue ? 'text-rose-600' : 'text-slate-700'}>{task.dueDate}</strong>
+                          Due: <strong className={isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'}>{task.dueDate}</strong>
                         </span>
                         <span>•</span>
                         <span>Est: {task.estimatedHours || 6} Hours</span>
                         <span>•</span>
-                        <span className="font-bold text-slate-900">Reward: +{task.xpReward} XP</span>
+                        <span className="font-bold text-slate-900 dark:text-white">Reward: +{task.xpReward} XP</span>
                       </div>
                     </div>
 
@@ -206,7 +206,7 @@ export default function MyTasksDashboardPage() {
                       <button
                         type="button"
                         onClick={() => setActiveDetailTask(task)}
-                        className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+                        className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition"
                       >
                         Details
                       </button>
@@ -214,7 +214,7 @@ export default function MyTasksDashboardPage() {
                       {task.status === 'todo' && (
                         <button
                           onClick={() => updateTaskStatus(task.id, 'in_progress', 'Started task work')}
-                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition"
                         >
                           Start Working
                         </button>
@@ -227,7 +227,7 @@ export default function MyTasksDashboardPage() {
                             setSubmissionNote('');
                             setSubmissionLink('');
                           }}
-                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5"
+                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5" />
                           <span>Submit Deliverable</span>
@@ -235,14 +235,14 @@ export default function MyTasksDashboardPage() {
                       )}
 
                       {task.status === 'under_review' && (
-                        <div className="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs text-center font-semibold">
+                        <div className="px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-300 text-xs text-center font-semibold">
                           ⏳ Under Lead Review
                         </div>
                       )}
 
                       {task.status === 'completed' && (
-                        <span className="px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span className="px-3 py-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 text-xs font-bold flex items-center justify-center gap-1">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           Verified (+{task.xpReward} XP)
                         </span>
                       )}
@@ -251,17 +251,17 @@ export default function MyTasksDashboardPage() {
 
                   {/* Submission note preview if exists */}
                   {task.submissionNote && (
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                      <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wider block">
+                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                      <span className="font-bold text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-wider block">
                         Submission Note:
                       </span>
-                      <p className="text-slate-600 italic">"{task.submissionNote}"</p>
+                      <p className="text-slate-600 dark:text-slate-400 italic">"{task.submissionNote}"</p>
                       {task.submissionLink && (
                         <a
                           href={task.submissionLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 font-semibold hover:underline flex items-center gap-1 pt-1"
+                          className="text-slate-900 dark:text-white font-semibold hover:underline flex items-center gap-1 pt-1"
                         >
                           <span>View Submitted Deliverable Link</span>
                           <ExternalLink className="w-3 h-3" />
@@ -277,25 +277,25 @@ export default function MyTasksDashboardPage() {
 
         {/* Task Detail Modal */}
         {activeDetailTask && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-              <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+              <div className="flex items-start justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded">
                       {activeDetailTask.clubName}
                     </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded">
                       {activeDetailTask.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <h3 className="font-extrabold text-base text-slate-900">
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                     {activeDetailTask.title}
                   </h3>
                 </div>
                 <button
                   onClick={() => setActiveDetailTask(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -303,28 +303,28 @@ export default function MyTasksDashboardPage() {
 
               <div className="space-y-3.5 text-xs">
                 <div>
-                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider block">
                     Scope & Description:
                   </span>
-                  <p className="mt-1 text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200 whitespace-pre-wrap">
+                  <p className="mt-1 text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700 whitespace-pre-wrap">
                     {activeDetailTask.description}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold">Due Date:</span>
-                    <p className="font-bold text-slate-800 mt-0.5">{activeDetailTask.dueDate}</p>
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold">Due Date:</span>
+                    <p className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{activeDetailTask.dueDate}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-semibold">Reward Bounty:</span>
-                    <p className="font-bold text-slate-900 mt-0.5">+{activeDetailTask.xpReward} XP</p>
+                    <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-semibold">Reward Bounty:</span>
+                    <p className="font-bold text-slate-900 dark:text-white mt-0.5">+{activeDetailTask.xpReward} XP</p>
                   </div>
                 </div>
 
                 {/* Audit Trail */}
                 <div>
-                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block mb-1">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider block mb-1">
                     Activity & Audit Trail:
                   </span>
                   <div className="space-y-1.5 max-h-32 overflow-y-auto">
@@ -332,18 +332,18 @@ export default function MyTasksDashboardPage() {
                       (activeDetailTask.activities || []).map(act => (
                         <div
                           key={act.id || Math.random().toString()}
-                          className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]"
+                          className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-[11px]"
                         >
-                          <div className="flex items-center justify-between text-slate-500">
-                            <span className="font-bold text-slate-700">{act.userName || 'Member'}</span>
+                          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                            <span className="font-bold text-slate-700 dark:text-slate-200">{act.userName || 'Member'}</span>
                             <span className="text-[10px]">{act.timestamp || 'Recent'}</span>
                           </div>
-                          <p className="text-slate-600 mt-0.5">{act.action}</p>
-                          {act.note && <p className="text-slate-500 italic mt-0.5">"{act.note}"</p>}
+                          <p className="text-slate-600 dark:text-slate-400 mt-0.5">{act.action}</p>
+                          {act.note && <p className="text-slate-500 dark:text-slate-400 italic mt-0.5">"{act.note}"</p>}
                         </div>
                       ))
                     ) : (
-                      <div className="p-2 text-center text-slate-400 bg-slate-50 rounded-lg text-[11px]">
+                      <div className="p-2 text-center text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/40 rounded-lg text-[11px]">
                         No additional activity recorded yet.
                       </div>
                     )}
@@ -351,11 +351,11 @@ export default function MyTasksDashboardPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setActiveDetailTask(null)}
-                  className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold"
+                  className="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold"
                 >
                   Close
                 </button>
@@ -365,7 +365,7 @@ export default function MyTasksDashboardPage() {
                       setShowSubmitModal(activeDetailTask);
                       setActiveDetailTask(null);
                     }}
-                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
+                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-xs font-semibold shadow-xs"
                   >
                     Submit Deliverable
                   </button>
@@ -377,16 +377,16 @@ export default function MyTasksDashboardPage() {
 
         {/* Submission Modal */}
         {showSubmitModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200/90 space-y-4 animate-in zoom-in-95">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200/90 dark:border-slate-800 space-y-4 animate-in zoom-in-95">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="font-bold text-base text-slate-900">Submit Work for Review</h3>
-                  <p className="text-xs text-slate-500">{showSubmitModal.title}</p>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Submit Work for Review</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{showSubmitModal.title}</p>
                 </div>
                 <button
                   onClick={() => setShowSubmitModal(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -394,7 +394,7 @@ export default function MyTasksDashboardPage() {
 
               <form onSubmit={handleSubmit} className="space-y-3 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Deliverable URL (GitHub / Google Drive / Figma / Demo):
                   </label>
                   <input
@@ -402,12 +402,12 @@ export default function MyTasksDashboardPage() {
                     placeholder="https://..."
                     value={submissionLink}
                     onChange={e => setSubmissionLink(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-1">
+                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Completion Notes for Lead:
                   </label>
                   <textarea
@@ -416,21 +416,21 @@ export default function MyTasksDashboardPage() {
                     placeholder="Describe how the requirements were met..."
                     value={submissionNote}
                     onChange={e => setSubmissionNote(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-white bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white"
                   />
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowSubmitModal(null)}
-                    className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium"
+                    className="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-xs transition"
+                    className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold shadow-xs transition"
                   >
                     Submit for Review
                   </button>

@@ -5,6 +5,8 @@ import TaskModel from '@/models/Task';
 import { getSessionUser } from '@/lib/auth';
 import { canManageClub, isPlatformAdmin } from '@/lib/rbac';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const sessionUser = await getSessionUser(request);

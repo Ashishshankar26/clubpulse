@@ -447,6 +447,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
     skills: string[];
     portfolioUrl?: string;
   }): Application => {
+    const prevApplications = applications;
     const targetClub = clubs.find(c => c.id === clubId);
     const newApp: Application = {
       id: `app_${Date.now()}`,
@@ -466,9 +467,10 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
       appliedDate: new Date().toISOString().split('T')[0],
     };
 
+    // Optimistically update
     setApplications(prev => [newApp, ...prev]);
 
-    // Sync to live MongoDB Atlas backend
+    // Sync to live MongoDB Atlas backend with rollback on error
     fetch('/api/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -479,7 +481,15 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
         skills,
         portfolioUrl: portfolioUrl || '',
       }),
-    }).catch(() => {});
+    })
+      .then(res => {
+        if (!res.ok) {
+          setApplications(prevApplications);
+        }
+      })
+      .catch(() => {
+        setApplications(prevApplications);
+      });
 
     // Send notification to the club lead
     if (targetClub) {
@@ -545,7 +555,96 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
-    // 5. Live Server Persistence and Audit Log
+    // OPTIMISTIC UI: Take snapshots of prior state for instantaneous UI feedback & rollback safety
+    const prevApplications = applications;
+    const prevClubs = clubs;
+    const prevUsers = users;
+
+    const today = new Date().toISOString().split('T')[0];
+
+    // Optimistically update applications state immediately
+    setApplications(prev =>
+      prev.map(a =>
+        a.id === appId
+          ? {
+              ...a,
+              status: status as ApplicationStatus,
+              reviewedDate: today,
+              reviewedBy: currentUser.name,
+              notes: notes || a.notes,
+            }
+          : a
+      )
+    );
+
+    if (status === 'approved') {
+      setClubs(prevClubs =>
+        prevClubs.map(c => {
+          if (c.id === app.clubId) {
+            const alreadyMember = c.members.some(m => m.userId === app.userId);
+            if (!alreadyMember) {
+              const newMember = {
+                userId: app.userId,
+                userName: app.userName,
+                userEmail: app.userEmail,
+                avatar: app.userAvatar,
+                clubRole: 'General Member' as const,
+                joinedDate: today,
+                tasksCompleted: 0,
+                participationRate: 100,
+                xpEarned: 50,
+              };
+              return {
+                ...c,
+                memberCount: c.memberCount + 1,
+                members: [...c.members, newMember],
+              };
+            }
+          }
+          return c;
+        })
+      );
+
+      setUsers(prevUsers =>
+        prevUsers.map(u => {
+          if (u.id === app.userId) {
+            const alreadyIn = u.clubsJoined.includes(app.clubId);
+            return {
+              ...u,
+              clubsJoined: alreadyIn ? u.clubsJoined : [...u.clubsJoined, app.clubId],
+              xpPoints: u.xpPoints + 50,
+            };
+          }
+          return u;
+        })
+      );
+
+      const memberNotif: NotificationItem = {
+        id: `notif_${Date.now()}`,
+        userId: app.userId,
+        title: `Application Accepted! Welcome to ${app.clubName}`,
+        message: `Congratulations! Your application for "${app.appliedRole}" was approved by ${currentUser.name}. Check your onboarding dashboard.`,
+        type: 'recruitment',
+        link: '/onboarding',
+        createdAt: 'Just now',
+        read: false,
+      };
+      setNotifications(prev => [memberNotif, ...prev]);
+    } else {
+      const memberNotif: NotificationItem = {
+        id: `notif_${Date.now()}`,
+        userId: app.userId,
+        title: `Application Update: ${app.clubName}`,
+        message: `Thank you for your interest in ${app.clubName}. At this time, we are unable to offer you a spot for ${app.appliedRole}.`,
+        type: 'recruitment',
+        link: '/clubs',
+        createdAt: 'Just now',
+        read: false,
+      };
+      setNotifications(prev => [memberNotif, ...prev]);
+    }
+
+    // 5. Live Server Persistence in background with rollback on failure
     try {
       const res = await fetch(`/api/applications/${appId}/review`, {
         method: 'POST',
@@ -558,98 +657,23 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
+        // Rollback optimistic state
+        setApplications(prevApplications);
+        setClubs(prevClubs);
+        setUsers(prevUsers);
         return {
           success: false,
           error: data.message || 'Server rejected application review decision.',
         };
       }
 
-      // Update local state only on server-verified confirmation
-      const today = new Date().toISOString().split('T')[0];
-      setApplications(prev =>
-        prev.map(a =>
-          a.id === appId
-            ? {
-                ...a,
-                status: status as ApplicationStatus,
-                reviewedDate: today,
-                reviewedBy: currentUser.name,
-                notes: notes || a.notes,
-              }
-            : a
-        )
-      );
-
-      if (status === 'approved') {
-        setClubs(prevClubs =>
-          prevClubs.map(c => {
-            if (c.id === app.clubId) {
-              const alreadyMember = c.members.some(m => m.userId === app.userId);
-              if (!alreadyMember) {
-                const newMember = {
-                  userId: app.userId,
-                  userName: app.userName,
-                  userEmail: app.userEmail,
-                  avatar: app.userAvatar,
-                  clubRole: 'General Member' as const,
-                  joinedDate: today,
-                  tasksCompleted: 0,
-                  participationRate: 100,
-                  xpEarned: 50,
-                };
-                return {
-                  ...c,
-                  memberCount: c.memberCount + 1,
-                  members: [...c.members, newMember],
-                };
-              }
-            }
-            return c;
-          })
-        );
-
-        setUsers(prevUsers =>
-          prevUsers.map(u => {
-            if (u.id === app.userId) {
-              const alreadyIn = u.clubsJoined.includes(app.clubId);
-              return {
-                ...u,
-                clubsJoined: alreadyIn ? u.clubsJoined : [...u.clubsJoined, app.clubId],
-                xpPoints: u.xpPoints + 50,
-              };
-            }
-            return u;
-          })
-        );
-
-        const memberNotif: NotificationItem = {
-          id: `notif_${Date.now()}`,
-          userId: app.userId,
-          title: `Application Accepted! Welcome to ${app.clubName}`,
-          message: `Congratulations! Your application for "${app.appliedRole}" was approved by ${currentUser.name}. Check your onboarding dashboard.`,
-          type: 'recruitment',
-          link: '/onboarding',
-          createdAt: 'Just now',
-          read: false,
-        };
-        setNotifications(prev => [memberNotif, ...prev]);
-      } else {
-        const memberNotif: NotificationItem = {
-          id: `notif_${Date.now()}`,
-          userId: app.userId,
-          title: `Application Update: ${app.clubName}`,
-          message: `Thank you for your interest in ${app.clubName}. At this time, we are unable to offer you a spot for ${app.appliedRole}.`,
-          type: 'recruitment',
-          link: '/clubs',
-          createdAt: 'Just now',
-          read: false,
-        };
-        setNotifications(prev => [memberNotif, ...prev]);
-      }
-
       refreshDatabaseState();
       return { success: true };
     } catch (err: any) {
+      // Rollback optimistic state on network failure
+      setApplications(prevApplications);
+      setClubs(prevClubs);
+      setUsers(prevUsers);
       return {
         success: false,
         error: err.message || 'Network error processing review decision.',
@@ -742,7 +766,11 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateTaskStatus = (taskId: string, newStatus: TaskStatus, note?: string) => {
+    // OPTIMISTIC UI: Snapshot prior tasks for rollback
+    const prevTasks = tasks;
     const now = new Date().toLocaleString();
+
+    // Optimistically update local task state immediately
     setTasks(prev =>
       prev.map(t => {
         if (t.id === taskId) {
@@ -766,6 +794,21 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
         return t;
       })
     );
+
+    // Sync to backend in background with automatic rollback on error
+    fetch(`/api/tasks/${taskId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus, note }),
+    })
+      .then(async res => {
+        if (!res.ok) {
+          setTasks(prevTasks);
+        }
+      })
+      .catch(() => {
+        setTasks(prevTasks);
+      });
   };
 
   const submitTaskForReview = (
@@ -773,10 +816,13 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
     submissionNote: string,
     submissionLink?: string
   ) => {
+    // OPTIMISTIC UI: Snapshot prior tasks for rollback
+    const prevTasks = tasks;
     const now = new Date().toLocaleString();
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
+    // Optimistically move to under_review immediately
     setTasks(prev =>
       prev.map(t => {
         if (t.id === taskId) {
@@ -803,17 +849,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Sync submission to live MongoDB Atlas backend
-    fetch(`/api/tasks/${taskId}/submit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        submissionNote,
-        submissionLink: submissionLink || '',
-      }),
-    }).catch(() => {});
-
-    // Notify club lead
+    // Notify club lead immediately
     const club = clubs.find(c => c.id === task.clubId);
     if (club) {
       const leadNotif: NotificationItem = {
@@ -828,6 +864,24 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
       };
       setNotifications(prev => [leadNotif, ...prev]);
     }
+
+    // Background sync to live MongoDB Atlas with rollback on error
+    fetch(`/api/tasks/${taskId}/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        submissionNote,
+        submissionLink: submissionLink || '',
+      }),
+    })
+      .then(res => {
+        if (!res.ok) {
+          setTasks(prevTasks);
+        }
+      })
+      .catch(() => {
+        setTasks(prevTasks);
+      });
   };
 
   const reviewTask = async (
@@ -868,7 +922,145 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 4. Live Server Persistence and Audit Log
+    // OPTIMISTIC UI: Take snapshots of prior state for instantaneous UI transition & rollback safety
+    const prevTasks = tasks;
+    const prevContributions = contributions;
+    const prevUsers = users;
+    const prevClubs = clubs;
+
+    const now = new Date().toLocaleString();
+    const todayDate = new Date().toISOString().split('T')[0];
+
+    // Optimistically update tasks and dependent states immediately
+    if (action === 'approve') {
+      setTasks(prev =>
+        prev.map(t => {
+          if (t.id === taskId) {
+            return {
+              ...t,
+              status: 'completed',
+              completedAt: now,
+              activities: [
+                {
+                  id: `act_${Date.now()}`,
+                  timestamp: now,
+                  userId: currentUser.id,
+                  userName: currentUser.name,
+                  action: `Approved task submission and verified contribution (${t.xpReward} XP awarded)`,
+                  note: reviewNote,
+                },
+                ...(t.activities || []),
+              ],
+            };
+          }
+          return t;
+        })
+      );
+
+      // Create verified contribution record immediately
+      const newContrib: Contribution = {
+        id: `contrib_${Date.now()}`,
+        userId: task.assigneeId,
+        userName: task.assigneeName,
+        clubId: task.clubId,
+        clubName: task.clubName,
+        taskId: task.id,
+        taskTitle: task.title,
+        date: todayDate,
+        xpEarned: task.xpReward,
+        category: (task.tags || []).includes('Design')
+          ? 'Design'
+          : (task.tags || []).includes('Sponsorship')
+          ? 'Sponsorship'
+          : 'Development',
+        verifiedBy: `${currentUser.name} (${currentUser.role === 'club_lead' ? 'Lead' : 'Admin'})`,
+        verifiedAt: now,
+        certificateHash: `CLUB-${task.clubId.substring(0, 4).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}-VERIFIED`,
+      };
+      setContributions(prev => [newContrib, ...prev]);
+
+      // Award XP to assignee immediately
+      setUsers(prev =>
+        prev.map(u =>
+          u.id === task.assigneeId
+            ? { ...u, xpPoints: u.xpPoints + task.xpReward }
+            : u
+        )
+      );
+
+      setClubs(prev =>
+        prev.map(c => {
+          if (c.id === task.clubId) {
+            return {
+              ...c,
+              members: c.members.map(m =>
+                m.userId === task.assigneeId
+                  ? {
+                      ...m,
+                      tasksCompleted: (m.tasksCompleted || 0) + 1,
+                      xpEarned: (m.xpEarned || 0) + task.xpReward,
+                      participationRate: Math.min(100, (m.participationRate || 50) + 5),
+                      isGhostRisk: false,
+                    }
+                  : m
+              ),
+            };
+          }
+          return c;
+        })
+      );
+
+      // Notify the assignee immediately
+      const assigneeNotif: NotificationItem = {
+        id: `notif_${Date.now()}`,
+        userId: task.assigneeId,
+        title: `Task Approved! +${task.xpReward} XP Earned`,
+        message: `${currentUser.name} approved "${task.title}". Your verified contribution is logged in your portfolio!`,
+        type: 'task',
+        link: '/contributions',
+        createdAt: 'Just now',
+        read: false,
+      };
+      setNotifications(prev => [assigneeNotif, ...prev]);
+    } else {
+      // Request changes: move back to in_progress immediately
+      setTasks(prev =>
+        prev.map(t => {
+          if (t.id === taskId) {
+            return {
+              ...t,
+              status: 'in_progress',
+              activities: [
+                {
+                  id: `act_${Date.now()}`,
+                  timestamp: now,
+                  userId: currentUser.id,
+                  userName: currentUser.name,
+                  action: 'Requested changes on task',
+                  note: reviewNote || 'Please revise submission items.',
+                },
+                ...(t.activities || []),
+              ],
+            };
+          }
+          return t;
+        })
+      );
+
+      const assigneeNotif: NotificationItem = {
+        id: `notif_${Date.now()}`,
+        userId: task.assigneeId,
+        title: `Changes Requested: ${task.title}`,
+        message: `${currentUser.name} requested changes on your submission: "${reviewNote || 'Please check task feedback.'}"`,
+        type: 'task',
+        link: '/my-tasks',
+        createdAt: 'Just now',
+        read: false,
+      };
+      setNotifications(prev => [assigneeNotif, ...prev]);
+    }
+
+    // 4. Live Server Persistence and Audit Log in background with rollback on rejection
     try {
       const res = await fetch(`/api/tasks/${taskId}/verify`, {
         method: 'POST',
@@ -881,148 +1073,25 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
+        // Rollback optimistic updates
+        setTasks(prevTasks);
+        setContributions(prevContributions);
+        setUsers(prevUsers);
+        setClubs(prevClubs);
         return {
           success: false,
           error: data.message || 'Server rejected task verification decision.',
         };
       }
 
-      const now = new Date().toLocaleString();
-      const todayDate = new Date().toISOString().split('T')[0];
-
-      if (action === 'approve') {
-        // Update task to completed
-        setTasks(prev =>
-          prev.map(t => {
-            if (t.id === taskId) {
-              return {
-                ...t,
-                status: 'completed',
-                completedAt: now,
-                activities: [
-                  {
-                    id: `act_${Date.now()}`,
-                    timestamp: now,
-                    userId: currentUser.id,
-                    userName: currentUser.name,
-                    action: `Approved task submission and verified contribution (${t.xpReward} XP awarded)`,
-                    note: reviewNote,
-                  },
-                  ...(t.activities || []),
-                ],
-              };
-            }
-            return t;
-          })
-        );
-
-        // Create verified contribution record
-        const newContrib: Contribution = {
-          id: `contrib_${Date.now()}`,
-          userId: task.assigneeId,
-          userName: task.assigneeName,
-          clubId: task.clubId,
-          clubName: task.clubName,
-          taskId: task.id,
-          taskTitle: task.title,
-          date: todayDate,
-          xpEarned: task.xpReward,
-          category: task.tags.includes('Design')
-            ? 'Design'
-            : task.tags.includes('Sponsorship')
-            ? 'Sponsorship'
-            : 'Development',
-          verifiedBy: `${currentUser.name} (${currentUser.role === 'club_lead' ? 'Lead' : 'Admin'})`,
-          verifiedAt: now,
-          certificateHash: `CLUB-${task.clubId.substring(5, 9).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}-VERIFIED`,
-        };
-        setContributions(prev => [newContrib, ...prev]);
-
-        // Award XP to assignee and update club member stats
-        setUsers(prev =>
-          prev.map(u =>
-            u.id === task.assigneeId
-              ? { ...u, xpPoints: u.xpPoints + task.xpReward }
-              : u
-          )
-        );
-
-        setClubs(prev =>
-          prev.map(c => {
-            if (c.id === task.clubId) {
-              return {
-                ...c,
-                members: c.members.map(m =>
-                  m.userId === task.assigneeId
-                    ? {
-                        ...m,
-                        tasksCompleted: m.tasksCompleted + 1,
-                        xpEarned: m.xpEarned + task.xpReward,
-                        participationRate: Math.min(100, m.participationRate + 5),
-                        isGhostRisk: false,
-                      }
-                    : m
-                ),
-              };
-            }
-            return c;
-          })
-        );
-
-        // Notify the assignee
-        const assigneeNotif: NotificationItem = {
-          id: `notif_${Date.now()}`,
-          userId: task.assigneeId,
-          title: `Task Approved! +${task.xpReward} XP Earned`,
-          message: `${currentUser.name} approved "${task.title}". Your verified contribution is logged in your portfolio!`,
-          type: 'task',
-          link: '/contributions',
-          createdAt: 'Just now',
-          read: false,
-        };
-        setNotifications(prev => [assigneeNotif, ...prev]);
-      } else {
-        // Request changes: move back to in_progress
-        setTasks(prev =>
-          prev.map(t => {
-            if (t.id === taskId) {
-              return {
-                ...t,
-                status: 'in_progress',
-                activities: [
-                  {
-                    id: `act_${Date.now()}`,
-                    timestamp: now,
-                    userId: currentUser.id,
-                    userName: currentUser.name,
-                    action: 'Requested changes on task',
-                    note: reviewNote || 'Please revise submission items.',
-                  },
-                  ...(t.activities || []),
-                ],
-              };
-            }
-            return t;
-          })
-        );
-
-        // Notify assignee
-        const assigneeNotif: NotificationItem = {
-          id: `notif_${Date.now()}`,
-          userId: task.assigneeId,
-          title: `Changes Requested: ${task.title}`,
-          message: `${currentUser.name} requested changes on your submission: "${reviewNote || 'Please check task feedback.'}"`,
-          type: 'task',
-          link: '/my-tasks',
-          createdAt: 'Just now',
-          read: false,
-        };
-        setNotifications(prev => [assigneeNotif, ...prev]);
-      }
-
       refreshDatabaseState();
       return { success: true };
     } catch (err: any) {
+      // Rollback optimistic updates on network failure
+      setTasks(prevTasks);
+      setContributions(prevContributions);
+      setUsers(prevUsers);
+      setClubs(prevClubs);
       return {
         success: false,
         error: err.message || 'Network error processing task review.',

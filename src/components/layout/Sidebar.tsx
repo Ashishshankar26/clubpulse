@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useClubPulse } from '@/context/ClubPulseContext';
 import { getManagedClubs, isTaskAssignedToUser } from '@/lib/permissions';
+import ThemeToggle from './ThemeToggle';
 import {
   LayoutDashboard,
   Compass,
@@ -74,36 +75,36 @@ export default function Sidebar() {
     const isActive = pathname === path;
     return `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${
       isActive
-        ? 'bg-slate-900 text-white font-semibold'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+        ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-semibold shadow-xs'
+        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70'
     }`;
   };
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200/90 bg-white min-h-[calc(100vh-4rem)] p-4 select-none shrink-0">
+    <aside className="hidden lg:flex flex-col w-64 border-r border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 min-h-[calc(100vh-4rem)] p-4 select-none shrink-0 transition-colors duration-150">
       {/* Active Profile Header Card */}
       {!isAuthenticated ? (
-        <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/90 text-left">
-          <div className="flex items-center justify-between text-xs text-slate-500 font-medium mb-1">
+        <div className="mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700 text-left">
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">
             <span className="text-[11px]">Campus Visitor</span>
-            <span className="font-medium text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[10px]">
+            <span className="font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-1.5 py-0.5 rounded text-[10px]">
               Guest
             </span>
           </div>
-          <p className="font-semibold text-slate-800 text-xs mt-1">Sign in with Registration No.</p>
-          <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+          <p className="font-semibold text-slate-800 dark:text-slate-200 text-xs mt-1">Sign in with Registration No.</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
             Access assigned tasks, club memberships, and credits.
           </p>
           <Link
             href="/login"
-            className="mt-2.5 w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition shadow-xs"
+            className="mt-2.5 w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold transition shadow-xs"
           >
             <LogIn className="w-3.5 h-3.5" />
             <span>Sign In</span>
           </Link>
         </div>
       ) : (
-        <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200/90">
+        <div className="mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700">
           <div className="flex items-center gap-3">
             <Link
               href="/settings"
@@ -113,13 +114,13 @@ export default function Sidebar() {
               <img
                 src={currentUser.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentUser.name)}`}
                 alt={currentUser.name}
-                className="w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 group-hover:ring-slate-900 transition"
+                className="w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700 group-hover:ring-slate-900 dark:group-hover:ring-white transition"
               />
             </Link>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
-                <span className="font-semibold text-slate-900 text-xs truncate">{currentUser.name}</span>
-                <span className="font-semibold text-slate-800 bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wide shrink-0">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                <span className="font-semibold text-slate-900 dark:text-white text-xs truncate">{currentUser.name}</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wide shrink-0">
                   {currentUser.role === 'club_lead'
                     ? 'Lead'
                     : currentUser.role === 'admin'
@@ -127,7 +128,7 @@ export default function Sidebar() {
                     : 'Student'}
                 </span>
               </div>
-              <p className="text-[10px] font-mono text-slate-600 font-medium truncate mt-0.5">
+              <p className="text-[10px] font-mono text-slate-600 dark:text-slate-400 font-medium truncate mt-0.5">
                 {currentUser.registrationNumber}
               </p>
             </div>
@@ -138,7 +139,7 @@ export default function Sidebar() {
       <div className="flex-1 space-y-5 overflow-y-auto pr-1">
         {/* Core Nav */}
         <div>
-          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
             Overview
           </p>
           <div className="space-y-0.5">
@@ -153,7 +154,7 @@ export default function Sidebar() {
 
         {/* Module 1: Clubs & Recruitment */}
         <div>
-          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
             Clubs & Discovery
           </p>
           <div className="space-y-0.5">
@@ -179,7 +180,7 @@ export default function Sidebar() {
                   <span>Recruitment</span>
                 </div>
                 {pendingAppsCount > 0 && (
-                  <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
+                  <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold px-1.5 py-0.2 rounded-full">
                     {pendingAppsCount}
                   </span>
                 )}
@@ -199,7 +200,7 @@ export default function Sidebar() {
 
         {/* Module 2: Operations & Tasks */}
         <div>
-          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
             Operations & Tasks
           </p>
           <div className="space-y-0.5">
@@ -211,7 +212,7 @@ export default function Sidebar() {
                   <span>Task Board</span>
                 </div>
                 {pendingTasksReviewCount > 0 && (
-                  <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
+                  <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold px-1.5 py-0.2 rounded-full">
                     {pendingTasksReviewCount}
                   </span>
                 )}
@@ -224,7 +225,7 @@ export default function Sidebar() {
                 <span>My Tasks</span>
               </div>
               {myTasksCount > 0 && (
-                <span className="text-[10px] bg-slate-200 text-slate-800 font-semibold px-1.5 py-0.2 rounded-full">
+                <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold px-1.5 py-0.2 rounded-full">
                   {myTasksCount}
                 </span>
               )}
@@ -244,7 +245,7 @@ export default function Sidebar() {
 
         {/* Module 3: Portfolio & Credits */}
         <div>
-          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
             Recognition & Health
           </p>
           <div className="space-y-0.5">
@@ -282,15 +283,22 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Quick Links at Bottom */}
-        <div className="pt-2 space-y-1.5 border-t border-slate-100">
+        {/* Appearance & Quick Links at Bottom */}
+        <div className="pt-3 space-y-2 border-t border-slate-100 dark:border-slate-800">
+          <div>
+            <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-1.5">
+              Theme
+            </span>
+            <ThemeToggle variant="expanded" className="w-full justify-between" />
+          </div>
+
           {isAuthenticated ? (
             <Link
               href="/settings"
-              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80 transition text-xs font-medium"
+              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition text-xs font-medium"
             >
               <span className="flex items-center gap-2">
-                <Settings className="w-3.5 h-3.5 text-slate-500" />
+                <Settings className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 <span>Account & Security</span>
               </span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
@@ -298,10 +306,10 @@ export default function Sidebar() {
           ) : (
             <Link
               href="/login"
-              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80 transition text-xs font-medium"
+              className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition text-xs font-medium"
             >
               <span className="flex items-center gap-2">
-                <LogIn className="w-3.5 h-3.5 text-slate-500" />
+                <LogIn className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 <span>Sign In with Reg No.</span>
               </span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />

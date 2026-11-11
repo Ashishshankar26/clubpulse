@@ -60,25 +60,25 @@ export default function MembersDirectoryPage() {
   if (isStudent && myJoinedClubs.length === 0) {
     return (
       <AppShell>
-        <div className="max-w-xl mx-auto my-12 bg-white rounded-xl p-8 border border-slate-200/90 shadow-xs text-center space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center mx-auto">
+        <div className="max-w-xl mx-auto my-12 bg-white dark:bg-slate-900 rounded-xl p-8 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center space-y-4 transition-colors">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center mx-auto">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
               No Active Club Memberships
             </span>
-            <h2 className="text-xl font-bold text-slate-900 mt-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-2">
               Campus Member Directory & Roster
             </h2>
-            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
               You have not joined any campus clubs yet. Internal member rosters, peer directories, and activity tracking become available once you are an enrolled member of a club. Explore our student organizations and submit an application to get started!
             </p>
           </div>
           <div className="pt-2">
             <Link
               href="/clubs"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold shadow-xs transition"
             >
               <span>Discover Clubs & Apply</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -129,13 +129,13 @@ export default function MembersDirectoryPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {isAdmin || isLead ? 'Module 1 • Member Directory & Governance' : 'Module 1 • Club Roster'}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
               {isAdmin || isLead ? 'Campus Member Directory & Ghost Radar' : 'Club Member Directory'}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
               {isAdmin || isLead
                 ? 'Monitor active participation, task contributions, verified XP, and identify disengaged ghost members early.'
                 : 'Connect with your club teammates, view roles, active projects, and verified activity credits.'}
@@ -145,9 +145,9 @@ export default function MembersDirectoryPage() {
           {(isAdmin || isLead) && (
             <Link
               href="/workload"
-              className="self-start md:self-auto px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition flex items-center gap-1.5"
+              className="self-start md:self-auto px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-medium shadow-xs transition flex items-center gap-1.5"
             >
-              <Flame className="w-4 h-4 text-slate-300" />
+              <Flame className="w-4 h-4 text-slate-300 dark:text-slate-700" />
               <span>Workload Rebalancer</span>
             </Link>
           )}
@@ -155,24 +155,24 @@ export default function MembersDirectoryPage() {
 
         {/* Nudge Confirmation Banner */}
         {nudgeMessage && (
-          <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-3.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>{nudgeMessage}</span>
           </div>
         )}
 
         {/* Filters & Search Toolbar */}
-        <div className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4 transition-colors">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search member by name, email, or role..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50"
+                className="w-full pl-10 pr-4 py-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
               />
             </div>
 
@@ -180,7 +180,7 @@ export default function MembersDirectoryPage() {
             <select
               value={selectedClubId}
               onChange={e => setSelectedClubId(e.target.value)}
-              className="px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:border-slate-900 bg-slate-50/50 font-medium"
+              className="px-3 py-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white font-medium transition-colors"
             >
               {accessibleClubs.length > 1 && <option value="all">All My Clubs</option>}
               {accessibleClubs.map(c => (
@@ -197,7 +197,7 @@ export default function MembersDirectoryPage() {
                 className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shrink-0 ${
                   onlyGhostRisk
                     ? 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                    : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800'
                 }`}
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
@@ -216,8 +216,8 @@ export default function MembersDirectoryPage() {
                 key={`${member.userId}_${member.clubId}_${idx}`}
                 className={`rounded-xl p-5 border transition-all duration-200 flex flex-col justify-between ${
                   isGhost
-                    ? 'bg-rose-50/30 border-rose-200 shadow-xs'
-                    : 'bg-white border-slate-200/90 shadow-xs hover:shadow-sm'
+                    ? 'bg-rose-50/30 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50 shadow-xs'
+                    : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-sm'
                 }`}
               >
                 <div>
@@ -228,12 +228,12 @@ export default function MembersDirectoryPage() {
                         src={getAvatarUrl(member.avatar, member.userName)}
                         alt={member.userName}
                         className={`w-12 h-12 rounded-lg object-cover ring-1 shrink-0 ${
-                          isGhost ? 'ring-rose-200 grayscale' : 'ring-slate-200'
+                          isGhost ? 'ring-rose-200 dark:ring-rose-800 grayscale' : 'ring-slate-200 dark:ring-slate-700'
                         }`}
                       />
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-sm text-slate-900 truncate">{member.userName}</h3>
-                        <p className="text-[11px] text-slate-500 truncate" title={member.userEmail}>
+                        <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate">{member.userName}</h3>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={member.userEmail}>
                           {member.userEmail}
                         </p>
                       </div>
@@ -242,42 +242,42 @@ export default function MembersDirectoryPage() {
                     <span
                       className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
                         member.clubRole === 'Lead'
-                          ? 'bg-slate-900 text-white'
+                          ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
                           : member.clubRole === 'Core Member'
-                          ? 'bg-slate-100 text-slate-800'
-                          : 'bg-slate-100 text-slate-700'
+                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                       }`}
                     >
                       {member.clubRole}
                     </span>
                   </div>
 
-                  <p className="text-xs font-semibold text-slate-700 mb-3 truncate">
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-3 truncate">
                     {member.clubName}
                   </p>
 
                   {/* Ghost alert banner if flagged (Leads/Admins only) */}
                   {isGhost && (
-                    <div className="mb-3 p-2.5 rounded-xl bg-rose-100/70 border border-rose-300/80 text-[11px] text-rose-800 flex items-start gap-1.5 font-medium">
-                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                    <div className="mb-3 p-2.5 rounded-xl bg-rose-100/70 dark:bg-rose-950/60 border border-rose-300/80 dark:border-rose-800 text-[11px] text-rose-800 dark:text-rose-300 flex items-start gap-1.5 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                       <span>Inactive &gt;30 days. High dropout / ghost risk.</span>
                     </div>
                   )}
 
                   {/* Participation stats */}
-                  <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Participation Rate:</span>
+                      <span className="text-slate-500 dark:text-slate-400">Participation Rate:</span>
                       <span
                         className={`font-bold ${
-                          isGhost ? 'text-rose-600' : 'text-emerald-600'
+                          isGhost ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                         }`}
                       >
                         {member.participationRate}%
                       </span>
                     </div>
                     {/* Progress bar */}
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
                           isGhost ? 'bg-rose-500' : 'bg-emerald-500'
@@ -287,15 +287,15 @@ export default function MembersDirectoryPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] pt-1">
-                      <span className="text-slate-500">Tasks Completed:</span>
-                      <span className="font-bold text-slate-800">
+                      <span className="text-slate-500 dark:text-slate-400">Tasks Completed:</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
                         {member.tasksCompleted} tasks
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Verified XP:</span>
-                      <span className="font-bold text-slate-900">
+                      <span className="text-slate-500 dark:text-slate-400">Verified XP:</span>
+                      <span className="font-bold text-slate-900 dark:text-white">
                         {member.xpEarned} XP
                       </span>
                     </div>
@@ -303,8 +303,8 @@ export default function MembersDirectoryPage() {
                 </div>
 
                 {/* Bottom actions */}
-                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">
+                <div className="pt-4 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500">
                     Joined: {member.joinedDate}
                   </span>
 
@@ -314,25 +314,25 @@ export default function MembersDirectoryPage() {
                       disabled={nudgedMemberIds.has(member.userId)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-xs ${
                         nudgedMemberIds.has(member.userId)
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
-                          : 'bg-slate-900 hover:bg-slate-800 text-white'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-default'
+                          : 'bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900'
                       }`}
                     >
                       {nudgedMemberIds.has(member.userId) ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span>Nudged ✓</span>
                         </>
                       ) : (
                         <>
-                          <Send className="w-3 h-3 text-slate-300" />
+                          <Send className="w-3 h-3 text-slate-300 dark:text-slate-600" />
                           <span>Re-engage Nudge</span>
                         </>
                       )}
                     </button>
                   ) : (
-                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
-                      <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <UserCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                       <span>Active Member</span>
                     </span>
                   )}
