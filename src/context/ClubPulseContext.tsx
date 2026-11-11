@@ -759,7 +759,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
                 action: actionText,
                 note,
               },
-              ...t.activities,
+              ...(t.activities || []),
             ],
           };
         }
@@ -795,7 +795,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
                 action: 'Submitted task for lead review',
                 note: submissionNote,
               },
-              ...t.activities,
+              ...(t.activities || []),
             ],
           };
         }
@@ -908,7 +908,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
                     action: `Approved task submission and verified contribution (${t.xpReward} XP awarded)`,
                     note: reviewNote,
                   },
-                  ...t.activities,
+                  ...(t.activities || []),
                 ],
               };
             }
@@ -998,7 +998,7 @@ export function ClubPulseProvider({ children }: { children: React.ReactNode }) {
                     action: 'Requested changes on task',
                     note: reviewNote || 'Please revise submission items.',
                   },
-                  ...t.activities,
+                  ...(t.activities || []),
                 ],
               };
             }

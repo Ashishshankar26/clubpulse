@@ -32,6 +32,21 @@ export default function Sidebar() {
 
   const myManagedClubIds = new Set(getManagedClubs(currentUser, clubs).map(c => c.id));
 
+  const myJoinedClubs = clubs.filter(
+    c =>
+      (currentUser.clubsJoined || []).includes(c.id) ||
+      (c.members || []).some(
+        m =>
+          m.userId === currentUser.id ||
+          (m.userEmail && currentUser.email && m.userEmail.toLowerCase() === currentUser.email.toLowerCase())
+      )
+  );
+
+  const hasActiveClubMembership =
+    currentUser.role === 'admin' ||
+    currentUser.role === 'club_lead' ||
+    myJoinedClubs.length > 0;
+
   const pendingAppsCount =
     currentUser.role === 'student'
       ? 0
@@ -171,12 +186,14 @@ export default function Sidebar() {
               </Link>
             )}
 
-            <Link href="/members" className={navItemClass('/members')}>
-              <div className="flex items-center gap-2.5">
-                <UserCheck className="w-4 h-4 opacity-80" />
-                <span>Club Roster</span>
-              </div>
-            </Link>
+            {hasActiveClubMembership && (
+              <Link href="/members" className={navItemClass('/members')}>
+                <div className="flex items-center gap-2.5">
+                  <UserCheck className="w-4 h-4 opacity-80" />
+                  <span>Club Roster</span>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -186,8 +203,8 @@ export default function Sidebar() {
             Operations & Tasks
           </p>
           <div className="space-y-0.5">
-            {/* Task Board: For Club Leads & Admins to create & delegate tasks */}
-            {(currentUser.role === 'club_lead' || currentUser.role === 'admin') && (
+            {/* Task Board: For Club Leads, Admins, and Enrolled Members */}
+            {hasActiveClubMembership && (
               <Link href="/tasks" className={navItemClass('/tasks')}>
                 <div className="flex items-center gap-2.5">
                   <Kanban className="w-4 h-4 opacity-80" />

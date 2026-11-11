@@ -5,7 +5,7 @@ import Link from 'next/link';
 import AppShell from '@/components/layout/AppShell';
 import { useClubPulse } from '@/context/ClubPulseContext';
 import { Task, TaskStatus } from '@/types';
-import { isTaskAssignedToUser } from '@/lib/permissions';
+import { isTaskAssignedToUser, getAvatarUrl } from '@/lib/permissions';
 import {
   CheckSquare,
   Clock,
@@ -18,6 +18,7 @@ import {
   X,
   ArrowRight,
   Sparkles,
+  Info,
 } from 'lucide-react';
 
 export default function MyTasksDashboardPage() {
@@ -30,6 +31,7 @@ export default function MyTasksDashboardPage() {
 
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
   const [showSubmitModal, setShowSubmitModal] = useState<Task | null>(null);
+  const [activeDetailTask, setActiveDetailTask] = useState<Task | null>(null);
   const [submissionNote, setSubmissionNote] = useState('');
   const [submissionLink, setSubmissionLink] = useState('');
 
@@ -52,6 +54,9 @@ export default function MyTasksDashboardPage() {
     );
 
     setShowSubmitModal(null);
+    if (activeDetailTask?.id === showSubmitModal.id) {
+      setActiveDetailTask(null);
+    }
   };
 
   return (
@@ -74,13 +79,13 @@ export default function MyTasksDashboardPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/tasks"
-              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium transition"
+              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition"
             >
-              All Club Kanban Board
+              Task Board Swimlanes
             </Link>
             <Link
               href="/contributions"
-              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
             >
               <Award className="w-4 h-4" />
               <span>Verified Portfolio</span>
@@ -94,7 +99,7 @@ export default function MyTasksDashboardPage() {
             onClick={() => setActiveTab('pending')}
             className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-2 ${
               activeTab === 'pending'
-                ? 'bg-slate-900 text-white shadow-xs'
+                ? 'bg-slate-900 text-white shadow-xs font-semibold'
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
@@ -105,7 +110,7 @@ export default function MyTasksDashboardPage() {
             onClick={() => setActiveTab('completed')}
             className={`px-4 py-2 rounded-lg text-xs font-medium transition flex items-center gap-2 ${
               activeTab === 'completed'
-                ? 'bg-slate-900 text-white shadow-xs'
+                ? 'bg-slate-900 text-white shadow-xs font-semibold'
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
@@ -124,7 +129,7 @@ export default function MyTasksDashboardPage() {
               </p>
               <p className="text-xs text-slate-400">
                 {activeTab === 'pending'
-                  ? 'Explore the Kanban board to pick up starter tasks or check in with your club lead.'
+                  ? 'Explore the Task Board to pick up starter tasks or check in with your club lead.'
                   : 'Submit active tasks to have your contributions reviewed and verified.'}
               </p>
             </div>
@@ -134,16 +139,16 @@ export default function MyTasksDashboardPage() {
               return (
                 <div
                   key={task.id}
-                  className="bg-white rounded-xl p-6 border border-slate-200/90 shadow-xs hover:shadow-sm transition space-y-4"
+                  className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xs transition space-y-4"
                 >
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div className="space-y-1.5 flex-1">
+                    <div className="space-y-2 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-semibold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
                           {task.clubName}
                         </span>
                         <span
-                          className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                             task.priority === 'urgent'
                               ? 'bg-slate-900 text-white shadow-xs'
                               : task.priority === 'high'
@@ -154,26 +159,29 @@ export default function MyTasksDashboardPage() {
                           {task.priority} Priority
                         </span>
                         <span
-                          className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
                             task.status === 'completed'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                               : task.status === 'under_review'
-                              ? 'bg-slate-100 text-slate-800 border border-slate-300'
+                              ? 'bg-amber-50 text-amber-800 border-amber-200'
                               : task.status === 'in_progress'
-                              ? 'bg-slate-100 text-slate-800'
-                              : 'bg-slate-100 text-slate-700'
+                              ? 'bg-blue-50 text-blue-900 border-blue-200'
+                              : 'bg-slate-100 text-slate-800 border-slate-200'
                           }`}
                         >
                           {task.status.replace('_', ' ')}
                         </span>
                         {isOverdue && (
-                          <span className="text-[10px] font-semibold uppercase tracking-wider bg-rose-600 text-white px-2 py-0.5 rounded flex items-center gap-1 shadow-xs">
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-rose-600 text-white px-2 py-0.5 rounded flex items-center gap-1 shadow-xs">
                             <AlertTriangle className="w-3 h-3" /> Overdue
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-base font-bold text-slate-900 mt-1">
+                      <h3
+                        onClick={() => setActiveDetailTask(task)}
+                        className="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer transition"
+                      >
                         {task.title}
                       </h3>
 
@@ -181,24 +189,32 @@ export default function MyTasksDashboardPage() {
                         {task.description}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-2">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1">
                         <span className="flex items-center gap-1 font-medium">
                           <Calendar className="w-3.5 h-3.5 text-slate-400" />
                           Due: <strong className={isOverdue ? 'text-rose-600' : 'text-slate-700'}>{task.dueDate}</strong>
                         </span>
                         <span>•</span>
-                        <span>Est: {task.estimatedHours} Hours</span>
+                        <span>Est: {task.estimatedHours || 6} Hours</span>
                         <span>•</span>
-                        <span className="font-semibold text-slate-900">Reward: +{task.xpReward} XP</span>
+                        <span className="font-bold text-slate-900">Reward: +{task.xpReward} XP</span>
                       </div>
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDetailTask(task)}
+                        className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+                      >
+                        Details
+                      </button>
+
                       {task.status === 'todo' && (
                         <button
                           onClick={() => updateTaskStatus(task.id, 'in_progress', 'Started task work')}
-                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition"
+                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
                         >
                           Start Working
                         </button>
@@ -211,21 +227,21 @@ export default function MyTasksDashboardPage() {
                             setSubmissionNote('');
                             setSubmissionLink('');
                           }}
-                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5"
+                          className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5" />
-                          <span>Submit for Review</span>
+                          <span>Submit Deliverable</span>
                         </button>
                       )}
 
                       {task.status === 'under_review' && (
-                        <div className="p-2.5 rounded-lg bg-slate-100 border border-slate-300 text-slate-800 text-xs text-center font-medium">
+                        <div className="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs text-center font-semibold">
                           ⏳ Under Lead Review
                         </div>
                       )}
 
                       {task.status === 'completed' && (
-                        <span className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold flex items-center justify-center gap-1">
+                        <span className="px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                           Verified (+{task.xpReward} XP)
                         </span>
@@ -235,8 +251,8 @@ export default function MyTasksDashboardPage() {
 
                   {/* Submission note preview if exists */}
                   {task.submissionNote && (
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                      <span className="font-semibold text-slate-700 text-[11px] uppercase tracking-wider block">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                      <span className="font-bold text-slate-700 text-[10px] uppercase tracking-wider block">
                         Submission Note:
                       </span>
                       <p className="text-slate-600 italic">"{task.submissionNote}"</p>
@@ -245,9 +261,9 @@ export default function MyTasksDashboardPage() {
                           href={task.submissionLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-900 font-semibold hover:underline flex items-center gap-1 pt-1"
+                          className="text-blue-600 font-semibold hover:underline flex items-center gap-1 pt-1"
                         >
-                          <span>Deliverable Link</span>
+                          <span>View Submitted Deliverable Link</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
@@ -258,6 +274,106 @@ export default function MyTasksDashboardPage() {
             })
           )}
         </div>
+
+        {/* Task Detail Modal */}
+        {activeDetailTask && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+              <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                      {activeDetailTask.clubName}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                      {activeDetailTask.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <h3 className="font-extrabold text-base text-slate-900">
+                    {activeDetailTask.title}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setActiveDetailTask(null)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3.5 text-xs">
+                <div>
+                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block">
+                    Scope & Description:
+                  </span>
+                  <p className="mt-1 text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200 whitespace-pre-wrap">
+                    {activeDetailTask.description}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div>
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold">Due Date:</span>
+                    <p className="font-bold text-slate-800 mt-0.5">{activeDetailTask.dueDate}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold">Reward Bounty:</span>
+                    <p className="font-bold text-slate-900 mt-0.5">+{activeDetailTask.xpReward} XP</p>
+                  </div>
+                </div>
+
+                {/* Audit Trail */}
+                <div>
+                  <span className="font-bold text-slate-500 uppercase text-[10px] tracking-wider block mb-1">
+                    Activity & Audit Trail:
+                  </span>
+                  <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                    {(activeDetailTask.activities || []).length > 0 ? (
+                      (activeDetailTask.activities || []).map(act => (
+                        <div
+                          key={act.id || Math.random().toString()}
+                          className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]"
+                        >
+                          <div className="flex items-center justify-between text-slate-500">
+                            <span className="font-bold text-slate-700">{act.userName || 'Member'}</span>
+                            <span className="text-[10px]">{act.timestamp || 'Recent'}</span>
+                          </div>
+                          <p className="text-slate-600 mt-0.5">{act.action}</p>
+                          {act.note && <p className="text-slate-500 italic mt-0.5">"{act.note}"</p>}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-2 text-center text-slate-400 bg-slate-50 rounded-lg text-[11px]">
+                        No additional activity recorded yet.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveDetailTask(null)}
+                  className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold"
+                >
+                  Close
+                </button>
+                {activeDetailTask.status === 'in_progress' && (
+                  <button
+                    onClick={() => {
+                      setShowSubmitModal(activeDetailTask);
+                      setActiveDetailTask(null);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs"
+                  >
+                    Submit Deliverable
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Submission Modal */}
         {showSubmitModal && (
@@ -314,7 +430,7 @@ export default function MyTasksDashboardPage() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-xs transition"
+                    className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-xs transition"
                   >
                     Submit for Review
                   </button>

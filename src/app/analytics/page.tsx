@@ -18,6 +18,7 @@ import {
   Flame,
   ArrowUpRight,
   ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function ClubAnalyticsPage() {
@@ -25,6 +26,39 @@ export default function ClubAnalyticsPage() {
 
   const [selectedClubId, setSelectedClubId] = useState<string>('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('semester');
+
+  // If student, display access-restricted screen pointing to their verified contributions
+  if (currentUser.role === 'student') {
+    return (
+      <AppShell>
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-xl p-8 border border-slate-200/90 shadow-xs text-center space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center mx-auto">
+            <BarChart3 className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-300">
+              Role Access Restricted
+            </span>
+            <h2 className="text-xl font-bold text-slate-900 mt-2">
+              Club Participation & Health Analytics
+            </h2>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Institutional velocity metrics, retention curves, and campus-wide performance summaries are reserved for Club Leads and Council Administrators. To inspect your personal achievements, visit your Verified Credits page.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/contributions"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition"
+            >
+              <span>View My Verified Credits</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   const selectedClub = selectedClubId === 'all' ? undefined : clubs.find(c => c.id === selectedClubId);
   const kpis = calculateClubKPIs(selectedClub, tasks, feedbacks);

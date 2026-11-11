@@ -1,5 +1,14 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+export interface ITaskActivity {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userName: string;
+  action: string;
+  note?: string;
+}
+
 export interface ITask extends Document {
   id: string;
   clubId: string;
@@ -19,6 +28,7 @@ export interface ITask extends Document {
   submissionNote?: string;
   submissionLink?: string;
   proofHash?: string;
+  activities?: ITaskActivity[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +61,19 @@ const TaskSchema = new Schema(
     submissionNote: { type: String },
     submissionLink: { type: String },
     proofHash: { type: String },
+    activities: {
+      type: [
+        {
+          id: { type: String },
+          timestamp: { type: String },
+          userId: { type: String },
+          userName: { type: String },
+          action: { type: String },
+          note: { type: String },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );
