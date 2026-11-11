@@ -149,11 +149,11 @@ export default function MyClubsPage() {
                   key={app.id || (app as any)._id || `my_app_${idx}`}
                   className="bg-white rounded-xl p-5 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-sm text-slate-900">{app.clubName}</h3>
+                      <h3 className="font-bold text-sm text-slate-900 truncate">{app.clubName}</h3>
                       <span
-                        className={`px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${
+                        className={`px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider shrink-0 ${
                           app.status === 'approved'
                             ? 'bg-emerald-100 text-emerald-800'
                             : app.status === 'rejected'
@@ -166,14 +166,20 @@ export default function MyClubsPage() {
                         {app.status.replace('_', ' ')}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate-600 truncate">
                       Applying for: <strong>{app.appliedRole}</strong> • Submitted: {app.appliedDate}
                     </p>
-                    <p className="text-xs text-slate-500 italic">
+                    <p
+                      className="text-xs text-slate-500 italic break-words break-all line-clamp-2"
+                      title={app.statementOfPurpose}
+                    >
                       "{app.statementOfPurpose}"
                     </p>
                     {app.notes && (
-                      <p className="text-[11px] text-slate-700 font-medium bg-slate-50 p-2 rounded-lg mt-1 border border-slate-200/70">
+                      <p
+                        className="text-[11px] text-slate-700 font-medium bg-slate-50 p-2 rounded-lg mt-1 border border-slate-200/70 break-all"
+                        title={app.notes}
+                      >
                         Feedback / Reviewer Note: {app.notes}
                       </p>
                     )}

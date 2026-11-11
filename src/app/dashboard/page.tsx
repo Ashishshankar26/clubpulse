@@ -294,18 +294,21 @@ export default function DashboardPage() {
                         key={t.id}
                         className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900">{t.title}</span>
-                            <span className="font-mono text-[11px] text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                            <span className="font-semibold text-slate-900 truncate">{t.title}</span>
+                            <span className="font-mono text-[11px] text-slate-600 bg-white px-1.5 py-0.5 rounded border border-slate-200 shrink-0">
                               +{t.xpReward} XP
                             </span>
                           </div>
-                          <p className="text-slate-500 mt-0.5">
+                          <p className="text-slate-500 mt-0.5 truncate">
                             By <strong className="text-slate-700">{t.assigneeName}</strong>
                           </p>
                           {t.submissionNote && (
-                            <p className="text-slate-600 mt-1 bg-white p-2 rounded border border-slate-200/60 text-[11px]">
+                            <p
+                              className="text-slate-600 mt-1 bg-white p-2 rounded border border-slate-200/60 text-[11px] truncate break-all"
+                              title={t.submissionNote}
+                            >
                               "{t.submissionNote}"
                             </p>
                           )}
@@ -352,16 +355,19 @@ export default function DashboardPage() {
                         key={app.id || (app as any)._id || `applicant_${idx}`}
                         className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
                           <img
                             src={getAvatarUrl(app.userAvatar, app.userName)}
                             alt={app.userName}
-                            className="w-9 h-9 rounded-lg object-cover ring-1 ring-slate-200"
+                            className="w-9 h-9 rounded-lg object-cover ring-1 ring-slate-200 shrink-0"
                           />
-                          <div>
-                            <p className="font-semibold text-slate-900">{app.userName}</p>
-                            <p className="text-slate-500 font-medium">Role: {app.appliedRole}</p>
-                            <p className="text-slate-500 line-clamp-1 mt-0.5 text-[11px]">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-slate-900 truncate">{app.userName}</p>
+                            <p className="text-slate-500 font-medium truncate">Role: {app.appliedRole}</p>
+                            <p
+                              className="text-slate-500 truncate break-all mt-0.5 text-[11px]"
+                              title={app.statementOfPurpose}
+                            >
                               {app.statementOfPurpose}
                             </p>
                           </div>
@@ -415,15 +421,15 @@ export default function DashboardPage() {
                     key={m.userId}
                     className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <img
                         src={getAvatarUrl(m.avatar, m.userName)}
                         alt={m.userName}
-                        className="w-8 h-8 rounded-lg object-cover grayscale"
+                        className="w-8 h-8 rounded-lg object-cover grayscale shrink-0"
                       />
-                      <div>
-                        <p className="font-semibold text-slate-900">{m.userName}</p>
-                        <p className="text-slate-400 text-[11px]">{m.userEmail}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-900 truncate">{m.userName}</p>
+                        <p className="text-slate-400 text-[11px] truncate">{m.userEmail}</p>
                         <span className="inline-block mt-0.5 text-[10px] text-slate-500">
                           {m.participationRate}% participation
                         </span>
@@ -549,16 +555,18 @@ export default function DashboardPage() {
                       key={t.id}
                       className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
                     >
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-700">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-700 shrink-0">
                             {t.priority}
                           </span>
-                          <span className="font-semibold text-slate-900">{t.title}</span>
-                          <span className="font-mono text-slate-600">+{t.xpReward} XP</span>
+                          <span className="font-semibold text-slate-900 truncate">{t.title}</span>
+                          <span className="font-mono text-slate-600 shrink-0">+{t.xpReward} XP</span>
                         </div>
-                        <p className="text-slate-500 mt-0.5">{t.clubName}</p>
-                        <p className="text-slate-600 mt-1 leading-relaxed">{t.description}</p>
+                        <p className="text-slate-500 mt-0.5 truncate">{t.clubName}</p>
+                        <p className="text-slate-600 mt-1 leading-relaxed line-clamp-2 break-all" title={t.description}>
+                          {t.description}
+                        </p>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
@@ -618,22 +626,25 @@ export default function DashboardPage() {
                   myApplications.map((app, idx) => (
                     <div
                       key={app.id || (app as any)._id || `my_app_${idx}`}
-                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2 text-xs"
+                      className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2 text-xs min-w-0"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-slate-900">{app.clubName}</span>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-slate-900 truncate">{app.clubName}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded shrink-0">
                           {app.status.replace('_', ' ')}
                         </span>
                       </div>
-                      <p className="text-slate-600">
+                      <p className="text-slate-600 truncate">
                         Applied Role: <strong className="text-slate-800">{app.appliedRole}</strong>
                       </p>
                       <p className="text-[11px] text-slate-400">
                         Applied Date: {app.appliedDate}
                       </p>
                       {app.notes && (
-                        <p className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-[11px]">
+                        <p
+                          className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-[11px] line-clamp-2 break-all"
+                          title={app.notes}
+                        >
                           Note: {app.notes}
                         </p>
                       )}

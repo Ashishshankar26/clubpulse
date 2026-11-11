@@ -257,7 +257,7 @@ export default function RecruitmentManagementPage() {
                   key={app.id || (app as any)._id || `recruit_app_${idx}`}
                   className="p-5 hover:bg-slate-50/80 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-4 min-w-0 flex-1">
                     <img
                       src={
                         app.userAvatar ||
@@ -268,12 +268,12 @@ export default function RecruitmentManagementPage() {
                       alt={app.userName}
                       className="w-12 h-12 rounded-xl object-cover ring-1 ring-slate-200 shrink-0"
                     />
-                    <div className="space-y-1">
+                    <div className="space-y-1 min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-bold text-sm text-slate-900">{app.userName}</h3>
-                        <span className="text-xs text-slate-500">({app.department})</span>
+                        <h3 className="font-bold text-sm text-slate-900 truncate">{app.userName}</h3>
+                        <span className="text-xs text-slate-500 shrink-0">({app.department})</span>
                         <span
-                          className={`px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border ${getStatusBadge(
+                          className={`px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border shrink-0 ${getStatusBadge(
                             app.status
                           )}`}
                         >
@@ -281,11 +281,14 @@ export default function RecruitmentManagementPage() {
                         </span>
                       </div>
 
-                      <p className="text-xs font-semibold text-slate-800">
+                      <p className="text-xs font-semibold text-slate-800 truncate">
                         {app.clubName} • Applied for: <strong>{app.appliedRole}</strong>
                       </p>
 
-                      <p className="text-xs text-slate-600 line-clamp-1 italic max-w-xl">
+                      <p
+                        className="text-xs text-slate-600 truncate break-all italic max-w-xl"
+                        title={app.statementOfPurpose}
+                      >
                         "{app.statementOfPurpose}"
                       </p>
 
@@ -397,7 +400,7 @@ export default function RecruitmentManagementPage() {
                   <span className="font-bold text-slate-400 uppercase text-[10px] block">
                     Statement of Purpose:
                   </span>
-                  <p className="mt-1 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed">
+                  <p className="mt-1 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed break-words break-all">
                     {activeReviewApp.statementOfPurpose}
                   </p>
                 </div>
@@ -427,10 +430,10 @@ export default function RecruitmentManagementPage() {
                       href={activeReviewApp.portfolioUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-1 text-slate-900 font-semibold hover:underline flex items-center gap-1.5"
+                      className="mt-1 text-slate-900 font-semibold hover:underline flex items-center gap-1.5 break-all"
                     >
-                      <span>{activeReviewApp.portfolioUrl}</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="truncate">{activeReviewApp.portfolioUrl}</span>
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                     </a>
                   </div>
                 )}

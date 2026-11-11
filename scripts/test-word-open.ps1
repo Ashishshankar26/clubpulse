@@ -3,7 +3,7 @@ $word.Visible = $false
 $word.DisplayAlerts = 0
 
 try {
-  $path = "E:\next.js project sem 5\Club.ing_Project_Report_INT257_Ashish_Shankar.docx"
+  $path = "E:\next.js project sem 5\ClubPulse_Project_Report_INT257_Ashish_Shankar.docx"
   $doc = $word.Documents.Open($path)
   $pages = $doc.ComputeStatistics(2)
   Write-Host "WORD VERIFICATION SUCCESS: Document opened with ZERO errors! Page count: $pages"

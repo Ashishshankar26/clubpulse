@@ -26,6 +26,8 @@
 ~$*
 *.docx
 *.doc
+*.pdf
+docs/rendered_pages/
 AGENTS.md
 
 # debug
