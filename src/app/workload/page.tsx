@@ -271,10 +271,10 @@ export default function WorkloadBurnoutRadarPage() {
                     <div
                       className={`h-full rounded-full transition-all duration-700 ${
                         isOverloaded
-                          ? 'bg-slate-900 dark:bg-rose-500'
+                          ? 'bg-rose-500'
                           : isIdle
                           ? 'bg-slate-300 dark:bg-slate-700'
-                          : 'bg-slate-700 dark:bg-slate-300'
+                          : 'bg-slate-900 dark:bg-white'
                       }`}
                       style={{ width: `${Math.max(4, item.percentage)}%` }}
                     ></div>

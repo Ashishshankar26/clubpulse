@@ -210,12 +210,12 @@ export default function MembersDirectoryPage() {
         {/* Member Directory Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMembers.map((member, idx) => {
-            const isGhost = (isAdmin || isLead) && (member.isGhostRisk || member.participationRate < 30);
+            const isDisengaged = member.isGhostRisk || member.participationRate < 30;
             return (
               <div
                 key={`${member.userId}_${member.clubId}_${idx}`}
                 className={`rounded-xl p-5 border transition-all duration-200 flex flex-col justify-between ${
-                  isGhost
+                  isDisengaged
                     ? 'bg-rose-50/30 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50 shadow-xs'
                     : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-sm'
                 }`}
@@ -228,7 +228,7 @@ export default function MembersDirectoryPage() {
                         src={getAvatarUrl(member.avatar, member.userName)}
                         alt={member.userName}
                         className={`w-12 h-12 rounded-lg object-cover ring-1 shrink-0 ${
-                          isGhost ? 'ring-rose-200 dark:ring-rose-800 grayscale' : 'ring-slate-200 dark:ring-slate-700'
+                          isDisengaged ? 'ring-rose-200 dark:ring-rose-800 grayscale' : 'ring-slate-200 dark:ring-slate-700'
                         }`}
                       />
                       <div className="min-w-0 flex-1">
@@ -242,7 +242,7 @@ export default function MembersDirectoryPage() {
                     <span
                       className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
                         member.clubRole === 'Lead'
-                          ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                          ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-semibold'
                           : member.clubRole === 'Core Member'
                           ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
@@ -256,8 +256,8 @@ export default function MembersDirectoryPage() {
                     {member.clubName}
                   </p>
 
-                  {/* Ghost alert banner if flagged (Leads/Admins only) */}
-                  {isGhost && (
+                  {/* Ghost alert banner if flagged according to logic */}
+                  {isDisengaged && (
                     <div className="mb-3 p-2.5 rounded-xl bg-rose-100/70 dark:bg-rose-950/60 border border-rose-300/80 dark:border-rose-800 text-[11px] text-rose-800 dark:text-rose-300 flex items-start gap-1.5 font-medium">
                       <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                       <span>Inactive &gt;30 days. High dropout / ghost risk.</span>
@@ -270,19 +270,19 @@ export default function MembersDirectoryPage() {
                       <span className="text-slate-500 dark:text-slate-400">Participation Rate:</span>
                       <span
                         className={`font-bold ${
-                          isGhost ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                          isDisengaged ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'
                         }`}
                       >
                         {member.participationRate}%
                       </span>
                     </div>
-                    {/* Progress bar */}
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    {/* Progress bar - modeled after burnout radar horizontal bars */}
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
-                          isGhost ? 'bg-rose-500' : 'bg-emerald-500'
+                          isDisengaged ? 'bg-rose-500' : 'bg-slate-900 dark:bg-white'
                         }`}
-                        style={{ width: `${member.participationRate}%` }}
+                        style={{ width: `${Math.max(4, member.participationRate)}%` }}
                       ></div>
                     </div>
 
@@ -308,19 +308,19 @@ export default function MembersDirectoryPage() {
                     Joined: {member.joinedDate}
                   </span>
 
-                  {(isAdmin || isLead) && isGhost ? (
+                  {(isAdmin || isLead) && isDisengaged ? (
                     <button
                       onClick={() => handleNudge(member.userId, member.userName, member.clubName)}
                       disabled={nudgedMemberIds.has(member.userId)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-xs ${
                         nudgedMemberIds.has(member.userId)
-                          ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 cursor-default'
-                          : 'bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900'
+                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-default'
+                          : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold'
                       }`}
                     >
                       {nudgedMemberIds.has(member.userId) ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
                           <span>Nudged ✓</span>
                         </>
                       ) : (
@@ -330,6 +330,11 @@ export default function MembersDirectoryPage() {
                         </>
                       )}
                     </button>
+                  ) : isDisengaged ? (
+                    <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                      <span>Disengaged Member</span>
+                    </span>
                   ) : (
                     <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
                       <UserCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />

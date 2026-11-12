@@ -106,7 +106,9 @@ export default function MyClubsPage() {
                         </div>
                         <div>
                           <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase">Participation</span>
-                          <p className="font-bold text-emerald-600 dark:text-emerald-400">{memberData?.participationRate || 85}%</p>
+                          <p className={`font-bold ${(memberData?.participationRate ?? 85) < 30 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
+                            {memberData?.participationRate || 85}%
+                          </p>
                         </div>
                       </div>
                     </div>

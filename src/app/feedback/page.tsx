@@ -222,7 +222,7 @@ export default function PulseFeedbackPage() {
                       type="button"
                       onClick={() => setOverallSatisfaction(val)}
                       className={`p-1.5 rounded-lg transition ${
-                        val <= overallSatisfaction ? 'text-amber-500 dark:text-amber-400' : 'text-slate-200 dark:text-slate-700 hover:text-slate-400'
+                        val <= overallSatisfaction ? 'text-slate-900 dark:text-white' : 'text-slate-200 dark:text-slate-700 hover:text-slate-400'
                       }`}
                     >
                       <Star className="w-6 h-6 fill-current" />
@@ -368,7 +368,7 @@ export default function PulseFeedbackPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400">
+                    <div className="flex items-center gap-1 text-slate-900 dark:text-white">
                       {[...Array(item.overallSatisfaction)].map((_, i) => (
                         <Star key={i} className="w-3.5 h-3.5 fill-current" />
                       ))}
