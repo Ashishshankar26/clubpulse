@@ -1,4 +1,4 @@
-import { User, Club, Task, Application, ClubMember } from '@/types';
+import { Club } from '@/types';
 
 export interface MinimalUser {
   id?: string;

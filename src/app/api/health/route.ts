@@ -3,7 +3,6 @@ import { connectToDatabase } from '@/lib/mongodb';
 import mongoose from 'mongoose';
 
 export async function GET() {
-  const startTime = Date.now();
   let dbStatus = 'disconnected';
   let dbPingMs = 0;
 
@@ -13,7 +12,7 @@ export async function GET() {
     dbPingMs = Date.now() - t0;
     const state = mongoose.connection.readyState;
     dbStatus = state === 1 ? 'connected' : 'connecting';
-  } catch (err) {
+  } catch {
     dbStatus = 'error';
   }
 

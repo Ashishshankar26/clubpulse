@@ -3,9 +3,7 @@ import mongoose from 'mongoose';
 import { z } from 'zod';
 import { connectToDatabase } from '@/lib/mongodb';
 import TaskModel from '@/models/Task';
-import ClubModel from '@/models/Club';
 import { getSessionUser } from '@/lib/auth';
-import { canManageClub, isClubMember } from '@/lib/rbac';
 import { logAuditEvent } from '@/lib/audit';
 
 const PatchTaskSchema = z.object({

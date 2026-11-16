@@ -7,17 +7,12 @@ import { useClubPulse } from '@/context/ClubPulseContext';
 import { calculateClubKPIs } from '@/lib/metrics';
 import {
   BarChart3,
-  TrendingUp,
   Users,
   CheckCircle2,
   Award,
   Download,
-  Calendar,
-  Filter,
   FileText,
   Flame,
-  ArrowUpRight,
-  ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
 
